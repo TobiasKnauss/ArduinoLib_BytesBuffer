@@ -1,0 +1,40 @@
+#######################################
+# Syntax Coloring Map For MemoryTools
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+RingBuffer	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+Clear	KEYWORD2
+MoveReadPointer	KEYWORD2
+MoveWritePointer	KEYWORD2
+SetReadPointer	KEYWORD2
+SetWritePointer	KEYWORD2
+
+ReadByteAndMovePtr	KEYWORD2
+ReadBytesAndMovePtr	KEYWORD2
+ReadValueAndMovePtr	KEYWORD2
+
+WriteByteAndMovePtr	KEYWORD2
+WriteBytesAndMovePtr	KEYWORD2
+WriteValueAndMovePtr	KEYWORD2
+
+WriteRange_FromEnd	KEYWORD2
+WriteRange_FromStart	KEYWORD2
+WriteRange_StartToEnd	KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
