@@ -174,29 +174,29 @@ public:
   //--------------------------------------------------------------------
   // WriteRange_...
 
-  // Write the given value to the specified number of bytes in the ring buffer, starting at the given buffer position.
-  // i_StartOffset:       The relative position in the ring buffer from which on the value is written.
+  // Write the given value to the specified number of bytes in the ring buffer, starting at the given buffer address.
+  // i_StartAddress:      The relative position in the ring buffer from which on the value is written.
   // i_ByteCount:         The number of bytes that are written in the buffer.
   // i_Value:             The value that is written into the buffer.
-  bool WriteRange_FromStart ( uint16_t  i_StartOffset,
+  bool WriteRange_FromStart ( uint16_t  i_StartAddress,
                               uint16_t  i_ByteCount,
                               uint8_t   i_Value);
 
-  // Write the given value to the specified number of bytes in the ring buffer, ending at the given buffer position.
-  // i_EndOffset:         The relative position in the ring buffer up to which the value is written. This position is NOT included!
+  // Write the given value to the specified number of bytes in the ring buffer, ending at the given buffer address.
+  // i_EndAddress:        The relative position in the ring buffer up to which the value is written. This position is NOT included!
   // i_ByteCount:         The number of bytes that are written in the buffer.
   // i_Value:             The value that is written into the buffer.
-  bool WriteRange_FromEnd ( uint16_t  i_EndOffset,
-                            uint16_t  i_ByteCount,
-                            uint8_t   i_Value);
+  bool WriteRange_ToEnd ( uint16_t  i_EndAddress,
+                          uint16_t  i_ByteCount,
+                          uint8_t   i_Value);
 
-  // Write the given value to the ring buffer, starting and ending at the given buffer positions.
-  // i_StartOffset:       The relative position in the ring buffer from which on the value is written.
-  // i_EndOffset:         The relative position in the ring buffer up to which the value is written. This position is NOT included!
+  // Write the given value to the ring buffer, starting and ending at the given buffer addresses.
+  // i_StartAddress:      The relative position in the ring buffer from which on the value is written.
+  // i_EndAddress:        The relative position in the ring buffer up to which the value is written. This position is NOT included!
   //                      If start offset == end offset, the entire buffer will be written.
   // i_Value:             The value that is written into the buffer.
-  bool WriteRange_StartToEnd (uint16_t  i_StartOffset,
-                              uint16_t  i_EndOffset,
+  bool WriteRange_StartToEnd (uint16_t  i_StartAddress,
+                              uint16_t  i_EndAddress,
                               uint8_t   i_Value);
 };
 

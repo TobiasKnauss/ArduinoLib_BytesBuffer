@@ -309,11 +309,11 @@ bool ByteRingBuffer::WriteValueAndMovePtr ( int32_t   i_Value,
 }
 
 //--------------------------------------------------------------------
-bool ByteRingBuffer::WriteRange_FromStart ( uint16_t  i_StartOffset,
+bool ByteRingBuffer::WriteRange_FromStart ( uint16_t  i_StartAddress,
                                             uint16_t  i_ByteCount,
                                             uint8_t   i_Value)
 {
-  if (i_StartOffset >= m_DataLength)
+  if (i_StartAddress >= m_DataLength)
     return false;
   if (i_ByteCount == 0)
     return true;
@@ -326,25 +326,25 @@ bool ByteRingBuffer::WriteRange_FromStart ( uint16_t  i_StartOffset,
     return true;
   }
 
-  uint16_t bytesUntilEnd = m_DataLength - i_StartOffset;
+  uint16_t bytesUntilEnd = m_DataLength - i_StartAddress;
   if (i_ByteCount <= bytesUntilEnd)
   {
-    memset (m_pData + i_StartOffset, i_Value, i_ByteCount);
+    memset (m_pData + i_StartAddress, i_Value, i_ByteCount);
     return true;
   }
 
   uint16_t sizeOf2ndBlock = i_ByteCount - bytesUntilEnd;
-  memset (m_pData + i_StartOffset, i_Value, bytesUntilEnd);
-  memset (m_pData                , i_Value, sizeOf2ndBlock);
+  memset (m_pData + i_StartAddress, i_Value, bytesUntilEnd);
+  memset (m_pData                 , i_Value, sizeOf2ndBlock);
   return true;
 }
 
 //--------------------------------------------------------------------
-bool ByteRingBuffer::WriteRange_FromEnd ( uint16_t  i_EndOffset,  //                ex.1: 6    ex.2: 3
-                                          uint16_t  i_ByteCount,  //                ex.1: 3    ex.2: 6
-                                          uint8_t   i_Value)      // m_DataLength:  ex.1: 8    ex.2: 8
+bool ByteRingBuffer::WriteRange_ToEnd ( uint16_t  i_EndAddress,  //                ex.1: 6    ex.2: 3    --> ex.1: writing ___xxx__
+                                        uint16_t  i_ByteCount,   //                ex.1: 3    ex.2: 6        ex.2: writing xxx__xxx
+                                        uint8_t   i_Value)       // m_DataLength:  ex.1: 8    ex.2: 8
 {
-  if (i_EndOffset >= m_DataLength)  // ex.1,2: m_DataLength == 8  --> i_EndOffset may be 0 to 7.
+  if (i_EndAddress >= m_DataLength)  // ex.1,2: m_DataLength == 8  --> i_EndAddress may be 0 to 7.
     return false;
   if (i_ByteCount == 0)  // nothing to do.
     return true;
@@ -357,44 +357,46 @@ bool ByteRingBuffer::WriteRange_FromEnd ( uint16_t  i_EndOffset,  //            
     return true;
   }
 
-  if (i_ByteCount <= i_EndOffset)  // the start is before the end, write in one pass (like in ex.1)
+  if (i_EndAddress == 0)
+    i_EndAddress = m_DataLength;
+  if (i_ByteCount <= i_EndAddress)  // the start is before the end, write in one pass (like in ex.1)
   {
-    memset (m_pData + i_EndOffset - i_ByteCount, i_Value, i_ByteCount);  // ex.1:  start offset = 6 - 3 = 3  --> writing the bytes 3,4,5.
+    memset (m_pData + i_EndAddress - i_ByteCount, i_Value, i_ByteCount);  // ex.1:  start offset = 6 - 3 = 3  --> writing the bytes 3,4,5.
     return true;
   }
 
   // the start is after the end, write in two passes (like in ex.2)
-  uint16_t sizeOf2ndBlock = i_ByteCount - i_EndOffset;  // ex.2: 6 - 3 = 3
-  memset (m_pData,                                 i_Value, i_EndOffset);     // ex.2: writing the bytes 0,1,2
+  uint16_t sizeOf2ndBlock = i_ByteCount - i_EndAddress;  // ex.2: 6 - 3 = 3
+  memset (m_pData,                                 i_Value, i_EndAddress);    // ex.2: writing the bytes 0,1,2
   memset (m_pData + m_DataLength - sizeOf2ndBlock, i_Value, sizeOf2ndBlock);  // ex.2: start offset = 8 - 3 = 5  --> writing the bytes 5,6,7.
   return true;
 }
 
 //--------------------------------------------------------------------
-bool ByteRingBuffer::WriteRange_StartToEnd (uint16_t  i_StartOffset,  //                ex.1: 3    ex.2: 6
-                                            uint16_t  i_EndOffset,    //                ex.1: 6    ex.2: 3
-                                            uint8_t   i_Value)        // m_DataLength:  ex.1: 8    ex.2: 8
+bool ByteRingBuffer::WriteRange_StartToEnd (uint16_t  i_StartAddress,  //                ex.1: 3    ex.2: 6
+                                            uint16_t  i_EndAddress,    //                ex.1: 6    ex.2: 3
+                                            uint8_t   i_Value)         // m_DataLength:  ex.1: 8    ex.2: 8
 {
-  if (i_StartOffset >= m_DataLength)  // ex.1,2: m_DataLength == 8  --> i_StartOffset may be 0 to 7.
+  if (i_StartAddress >= m_DataLength)  // ex.1,2: m_DataLength == 8  --> i_StartAddress may be 0 to 7.
     return false;
-  if (i_EndOffset >= m_DataLength)  // ex.1,2: m_DataLength == 8  --> i_EndOffset may be 0 to 7.
+  if (i_EndAddress >= m_DataLength)  // ex.1,2: m_DataLength == 8  --> i_EndAddress may be 0 to 7.
     return false;
 
-  if (i_StartOffset == i_EndOffset)  // write the entire buffer
+  if (i_StartAddress == i_EndAddress)  // write the entire buffer
   {
     memset (m_pData, i_Value, m_DataLength);
     return true;
   }
 
-  if (i_EndOffset > i_StartOffset)  // the start is before the end, write in one pass (like in ex.1)
+  if (i_EndAddress > i_StartAddress)  // the start is before the end, write in one pass (like in ex.1)
   {
-    memset (m_pData + i_StartOffset, i_Value, i_EndOffset - i_StartOffset);  // ex.1: start offset = 3, length = 6 - 3 = 3 -->  writing the bytes 3,4,5
+    memset (m_pData + i_StartAddress, i_Value, i_EndAddress - i_StartAddress);  // ex.1: start offset = 3, length = 6 - 3 = 3 -->  writing the bytes 3,4,5
     return true;
   }
 
   // the start is after the end, write in two passes (like in ex.2)
-  uint16_t bytesUntilEnd = m_DataLength - i_StartOffset;    // ex.2: 8 - 6 = 2
-  memset (m_pData + i_StartOffset, i_Value, bytesUntilEnd); // ex.2: writing the bytes 6,7.
-  memset (m_pData                , i_Value, i_EndOffset);   // ex.2: writing the bytes 0,1,2.
+  uint16_t bytesUntilEnd = m_DataLength - i_StartAddress;     // ex.2: 8 - 6 = 2
+  memset (m_pData + i_StartAddress, i_Value, bytesUntilEnd);  // ex.2: writing the bytes 6,7.
+  memset (m_pData                 , i_Value, i_EndAddress);   // ex.2: writing the bytes 0,1,2.
   return true;
 }

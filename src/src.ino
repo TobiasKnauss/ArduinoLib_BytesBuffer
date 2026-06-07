@@ -43,7 +43,7 @@ void setup ()
   m_pRingBuffer->SetWritePointer (1);
 
   m_pRingBuffer->WriteRange_FromStart  (m_StartOffset, m_ByteCount, m_ValueUI8);
-  m_pRingBuffer->WriteRange_FromEnd    (m_EndOffset,   m_ByteCount, m_ValueUI8);
+  m_pRingBuffer->WriteRange_ToEnd      (m_EndOffset,   m_ByteCount, m_ValueUI8);
   m_pRingBuffer->WriteRange_StartToEnd (m_StartOffset, m_EndOffset, m_ValueUI8);
 }
 
