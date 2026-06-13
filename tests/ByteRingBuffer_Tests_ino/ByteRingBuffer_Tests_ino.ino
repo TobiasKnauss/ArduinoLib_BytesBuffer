@@ -649,7 +649,7 @@ test (ByteRingBuffer_WriteValueAndMovePtr_Test1)
       assertEqual (pRingBuffer->get_pData ()[(offset + check    ) % length], expected_UI16[ offset + check               ]);
       assertEqual (pRingBuffer->get_pData ()[(offset + check + 2) % length], expected_UI16[(offset + check + 2 + 18) % 27]);
     }
-    valueI16 = (valueI16 + 0x0044) & 0x00FF | (valueI16 + 0x4400) & 0xFF00;
+    valueI16 = valueI16 + 0x0044 & 0x00FF | valueI16 + 0x4400 & 0xFF00;
     address = (address + 2) % length;
   }
 
@@ -666,7 +666,7 @@ test (ByteRingBuffer_WriteValueAndMovePtr_Test1)
       assertEqual (pRingBuffer->get_pData ()[(offset + check    ) % length], expected_UI16_Inv[ offset + check               ]);
       assertEqual (pRingBuffer->get_pData ()[(offset + check + 2) % length], expected_UI16_Inv[(offset + check + 2 + 18) % 27]);
     }
-    valueI16 = (valueI16 + 0x0044) & 0x00FF | (valueI16 + 0x4400) & 0xFF00;
+    valueI16 = valueI16 + 0x0044 & 0x00FF | valueI16 + 0x4400 & 0xFF00;
     address = (address + 2) % length;
   }
 
@@ -686,7 +686,7 @@ test (ByteRingBuffer_WriteValueAndMovePtr_Test1)
       assertEqual (pRingBuffer->get_pData ()[(offset + check    ) % length], expected_UI32[ offset + check               ]);
       assertEqual (pRingBuffer->get_pData ()[(offset + check + 4) % length], expected_UI32[(offset + check + 4 + 36) % 45]);
     }
-    valueUI32 = (valueUI32 + 0x00000088) & 0x000000FF | (valueUI32 + 0x00008800) & 0x0000FF00 | (valueUI32 + 0x00880000) & 0x00FF0000 | (valueUI32 + 0x88000000) & 0xFF000000;
+    valueUI32 = valueUI32 + 0x00000088 & 0x000000FF | valueUI32 + 0x00008800 & 0x0000FF00 | valueUI32 + 0x00880000 & 0x00FF0000 | valueUI32 + 0x88000000 & 0xFF000000;
     address = (address + 4) % length;
   }
 
@@ -703,7 +703,7 @@ test (ByteRingBuffer_WriteValueAndMovePtr_Test1)
       assertEqual (pRingBuffer->get_pData ()[(offset + check    ) % length], expected_UI32_Inv[ offset + check               ]);
       assertEqual (pRingBuffer->get_pData ()[(offset + check + 4) % length], expected_UI32_Inv[(offset + check + 4 + 36) % 45]);
     }
-    valueUI32 = (valueUI32 + 0x00000088) & 0x000000FF | (valueUI32 + 0x00008800) & 0x0000FF00 | (valueUI32 + 0x00880000) & 0x00FF0000 | (valueUI32 + 0x88000000) & 0xFF000000;
+    valueUI32 = valueUI32 + 0x00000088 & 0x000000FF | valueUI32 + 0x00008800 & 0x0000FF00 | valueUI32 + 0x00880000 & 0x00FF0000 | valueUI32 + 0x88000000 & 0xFF000000;
     address = (address + 4) % length;
   }
 
@@ -720,7 +720,7 @@ test (ByteRingBuffer_WriteValueAndMovePtr_Test1)
       assertEqual (pRingBuffer->get_pData ()[(offset + check    ) % length], expected_UI32[ offset + check               ]);
       assertEqual (pRingBuffer->get_pData ()[(offset + check + 4) % length], expected_UI32[(offset + check + 4 + 36) % 45]);
     }
-    valueI32 = (valueI32 + 0x00000088) & 0x000000FF | (valueI32 + 0x00008800) & 0x0000FF00 | (valueI32 + 0x00880000) & 0x00FF0000 | (valueI32 + 0x88000000) & 0xFF000000;
+    valueI32 = valueI32 + 0x00000088 & 0x000000FF | valueI32 + 0x00008800 & 0x0000FF00 | valueI32 + 0x00880000 & 0x00FF0000 | valueI32 + 0x88000000 & 0xFF000000;
     address = (address + 4) % length;
   }
 
@@ -737,7 +737,7 @@ test (ByteRingBuffer_WriteValueAndMovePtr_Test1)
       assertEqual (pRingBuffer->get_pData ()[(offset + check    ) % length], expected_UI32_Inv[ offset + check               ]);
       assertEqual (pRingBuffer->get_pData ()[(offset + check + 4) % length], expected_UI32_Inv[(offset + check + 4 + 36) % 45]);
     }
-    valueI32 = (valueI32 + 0x00000088) & 0x000000FF | (valueI32 + 0x00008800) & 0x0000FF00 | (valueI32 + 0x00880000) & 0x00FF0000 | (valueI32 + 0x88000000) & 0xFF000000;
+    valueI32 = valueI32 + 0x00000088 & 0x000000FF | valueI32 + 0x00008800 & 0x0000FF00 | valueI32 + 0x00880000 & 0x00FF0000 | valueI32 + 0x88000000 & 0xFF000000;
     address = (address + 4) % length;
   }
 }

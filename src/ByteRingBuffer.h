@@ -57,6 +57,24 @@ public:
   // Reset the entire buffer to its default value.
   void Clear ();
 
+  // Clear the specified number of bytes in the ring buffer, starting at the given buffer address.
+  // i_StartAddress:  The relative position in the ring buffer where clearing starts.
+  // i_ByteCount:     The number of bytes that are cleared.
+  bool Clear_FromStart (uint16_t  i_StartAddress,
+                        uint16_t  i_ByteCount);
+
+  // Clear the specified number of bytes in the ring buffer, ending at the given buffer address.
+  // i_EndAddress:    The relative position in the ring buffer where clearing ends. This position is NOT included!
+  // i_ByteCount:     The number of bytes that are cleared.
+  bool Clear_ToEnd (uint16_t  i_EndAddress,
+                    uint16_t  i_ByteCount);
+
+  // Clear the ring buffer, starting and ending at the given buffer addresses.
+  // i_StartAddress:  The relative position in the ring buffer where clearing starts.
+  // i_EndAddress:    The relative position in the ring buffer where clearing ends. This position is NOT included!
+  //                  If start address == end address, the entire buffer will be cleared.
+  bool Clear_StartToEnd ( uint16_t  i_StartAddress,
+                          uint16_t  i_EndAddress);
 
   //--------------------------------------------------------------------
   // Pointer editing
@@ -181,29 +199,69 @@ public:
   // WriteRange_...
 
   // Write the given value to the specified number of bytes in the ring buffer, starting at the given buffer address.
-  // i_StartAddress:      The relative position in the ring buffer from which on the value is written.
-  // i_ByteCount:         The number of bytes that are written in the buffer.
-  // i_Value:             The value that is written into the buffer.
+  // i_StartAddress:  The relative position in the ring buffer from which on the value is written.
+  // i_ByteCount:     The number of bytes that are written in the buffer.
+  // i_Value:         The value that is written into the buffer.
   bool WriteRange_FromStart ( uint16_t  i_StartAddress,
                               uint16_t  i_ByteCount,
                               uint8_t   i_Value);
 
   // Write the given value to the specified number of bytes in the ring buffer, ending at the given buffer address.
-  // i_EndAddress:        The relative position in the ring buffer up to which the value is written. This position is NOT included!
-  // i_ByteCount:         The number of bytes that are written in the buffer.
-  // i_Value:             The value that is written into the buffer.
+  // i_EndAddress:    The relative position in the ring buffer up to which the value is written. This position is NOT included!
+  // i_ByteCount:     The number of bytes that are written in the buffer.
+  // i_Value:         The value that is written into the buffer.
   bool WriteRange_ToEnd ( uint16_t  i_EndAddress,
                           uint16_t  i_ByteCount,
                           uint8_t   i_Value);
 
   // Write the given value to the ring buffer, starting and ending at the given buffer addresses.
-  // i_StartAddress:      The relative position in the ring buffer from which on the value is written.
-  // i_EndAddress:        The relative position in the ring buffer up to which the value is written. This position is NOT included!
-  //                      If start address == end address, the entire buffer will be written.
-  // i_Value:             The value that is written into the buffer.
+  // i_StartAddress:  The relative position in the ring buffer from which on the value is written.
+  // i_EndAddress:    The relative position in the ring buffer up to which the value is written. This position is NOT included!
+  //                  If start address == end address, the entire buffer will be written.
+  // i_Value:         The value that is written into the buffer.
   bool WriteRange_StartToEnd (uint16_t  i_StartAddress,
                               uint16_t  i_EndAddress,
                               uint8_t   i_Value);
+
+  // Calculate the checksum of the specified part of the ring buffer.
+  // i_StartAddress:  The relative position in the ring buffer from which on the checksum is calculated.
+  // i_ByteCount:     The number of bytes for which the checksum is calculated.
+  // o_Checksum:      The calculated checksum.
+  bool CalcChecksumCRC16_FromStart (uint16_t  i_StartAddress,
+                                    uint16_t  i_ByteCount,
+                                    uint16_t& o_Checksum);
+
+  // Calculate the checksum of the specified part of the ring buffer.
+  // i_EndAddress:    The relative position in the ring buffer up to which the checksum is calculated. This position is NOT included!
+  // i_ByteCount:     The number of bytes for which the checksum is calculated.
+  // o_Checksum:      The calculated checksum.
+  bool CalcChecksumCRC16_ToEnd (uint16_t  i_EndAddress,
+                                uint16_t  i_ByteCount,
+                                uint16_t& o_Checksum);
+
+  // Calculate the checksum of the specified part of the ring buffer.
+  // i_StartAddress:  The relative position in the ring buffer from which on the checksum is calculated.
+  // i_EndAddress:    The relative position in the ring buffer up to which the checksum is calculated. This position is NOT included!
+  // o_Checksum:      The calculated checksum.
+  bool CalcChecksumCRC16_StartToEnd ( uint16_t  i_StartAddress,
+                                      uint16_t  i_EndAddress,
+                                      uint16_t& o_Checksum);
+
+  // Print the hexadecimal values of all data in the ring buffer to the specified output.
+  // i_pOutput:       The output stream that prints the data.
+  // i_AppendNewLine: A flag that specifies whether a new-line is printed or not.
+  bool Print (Stream* i_pOutput,
+              bool    i_AppendNewLine = false);
+
+  // Print the hexadecimal values of the specified part of the ring buffer to the specified output.
+  // i_pOutput:       The output stream that prints the data.
+  // i_StartAddress:  The relative position in the ring buffer from which on the data is printed.
+  // i_ByteCount:     The number of printed bytes.
+  // i_AppendNewLine: A flag that specifies whether a new-line is printed or not.
+  bool Print (Stream*   i_pOutput,
+              uint16_t  i_StartAddress,
+              uint16_t  i_ByteCount,
+              bool      i_AppendNewLine = false);
 };
 
 #endif

@@ -1,3 +1,4 @@
+#include <FastCRC.h>
 #include "MemoryTools_Memory.h"
 #include "ByteRingBuffer.h"
 
@@ -73,6 +74,27 @@ uint16_t ByteRingBuffer::get_Length ()
 void ByteRingBuffer::Clear ()
 {
   memset (m_pData, m_DefaultValue, m_DataLength);
+}
+
+//--------------------------------------------------------------------
+bool ByteRingBuffer::Clear_FromStart (uint16_t  i_StartAddress,
+                                      uint16_t  i_ByteCount)
+{
+  return WriteRange_FromStart (i_StartAddress, i_ByteCount, m_DefaultValue);
+}
+
+//--------------------------------------------------------------------
+bool ByteRingBuffer::Clear_ToEnd (uint16_t  i_EndAddress,
+                                  uint16_t  i_ByteCount)
+{
+  return WriteRange_ToEnd (i_EndAddress, i_ByteCount, m_DefaultValue);
+}
+
+//--------------------------------------------------------------------
+bool ByteRingBuffer::Clear_StartToEnd ( uint16_t  i_StartAddress,
+                                        uint16_t  i_EndAddress)
+{
+  return WriteRange_StartToEnd (i_StartAddress, i_EndAddress, m_DefaultValue);
 }
 
 //--------------------------------------------------------------------
@@ -398,5 +420,116 @@ bool ByteRingBuffer::WriteRange_StartToEnd (uint16_t  i_StartAddress,  //       
   uint16_t bytesUntilEnd = m_DataLength - i_StartAddress;     // ex.2: 8 - 6 = 2
   memset (m_pData + i_StartAddress, i_Value, bytesUntilEnd);  // ex.2: writing the bytes 6,7.
   memset (m_pData                 , i_Value, i_EndAddress);   // ex.2: writing the bytes 0,1,2.
+  return true;
+}
+
+//--------------------------------------------------------------------
+bool ByteRingBuffer::CalcChecksumCRC16_FromStart (uint16_t  i_StartAddress,
+                                                  uint16_t  i_ByteCount,
+                                                  uint16_t& o_Checksum)
+{
+  o_Checksum = 0;
+  if (i_StartAddress >= m_DataLength)
+    return false;
+  if (i_ByteCount == 0)
+    return true;
+  if (i_ByteCount > m_DataLength)
+    return false;
+
+  FastCRC16 crc16;
+
+  uint16_t bytesUntilEnd = m_DataLength - i_StartAddress;
+  if (i_ByteCount <= bytesUntilEnd)
+  {
+    o_Checksum = crc16.modbus (m_pData + i_StartAddress, i_ByteCount);
+    return true;
+  }
+
+  uint16_t sizeOf2ndBlock = i_ByteCount - bytesUntilEnd;
+               crc16.modbus     (m_pData + i_StartAddress, bytesUntilEnd);
+  o_Checksum = crc16.modbus_upd (m_pData                 , sizeOf2ndBlock);
+  return true;
+}
+
+//--------------------------------------------------------------------
+bool ByteRingBuffer::CalcChecksumCRC16_ToEnd (uint16_t  i_EndAddress,
+                                              uint16_t  i_ByteCount,
+                                              uint16_t& o_Checksum)
+{
+  o_Checksum = 0;
+  if (i_EndAddress >= m_DataLength)
+    return false;
+  if (i_ByteCount == 0)
+    return true;
+  if (i_ByteCount > m_DataLength)
+    return false;
+
+  FastCRC16 crc16;
+
+  if (i_EndAddress == 0)
+    i_EndAddress = m_DataLength;
+  if (i_ByteCount <= i_EndAddress)
+  {
+    o_Checksum = crc16.modbus (m_pData + i_EndAddress - i_ByteCount, i_ByteCount);
+    return true;
+  }
+
+  uint16_t sizeOf2ndBlock = i_ByteCount - i_EndAddress;
+               crc16.modbus     (m_pData,                                 i_EndAddress);
+  o_Checksum = crc16.modbus_upd (m_pData + m_DataLength - sizeOf2ndBlock, sizeOf2ndBlock);
+  return true;
+}
+
+//--------------------------------------------------------------------
+bool ByteRingBuffer::CalcChecksumCRC16_StartToEnd ( uint16_t  i_StartAddress,
+                                                    uint16_t  i_EndAddress,
+                                                    uint16_t& o_Checksum)
+{
+  if (i_StartAddress >= m_DataLength)
+    return false;
+  if (i_EndAddress >= m_DataLength)
+    return false;
+
+  FastCRC16 crc16;
+
+  if (i_EndAddress > i_StartAddress)
+  {
+    o_Checksum = crc16.modbus (m_pData + i_StartAddress, i_EndAddress - i_StartAddress);
+    return true;
+  }
+
+  uint16_t bytesUntilEnd = m_DataLength - i_StartAddress;
+               crc16.modbus     (m_pData + i_StartAddress, bytesUntilEnd);
+  o_Checksum = crc16.modbus_upd (m_pData                 , i_EndAddress);
+  return true;
+}
+
+//--------------------------------------------------------------------
+bool ByteRingBuffer::Print (Stream* i_pOutput,
+                            bool    i_AppendNewLine)
+{
+  return Print (i_pOutput, 0, m_DataLength, i_AppendNewLine);
+}
+
+//--------------------------------------------------------------------
+bool ByteRingBuffer::Print (Stream*   i_pOutput,
+                            uint16_t  i_StartAddress,
+                            uint16_t  i_ByteCount,
+                            bool      i_AppendNewLine)
+{
+  if (i_pOutput == nullptr)
+    return false;
+  if (i_StartAddress >= m_DataLength)
+    return false;
+  if (i_ByteCount == 0)
+    return true;
+  if (i_ByteCount > m_DataLength - i_StartAddress)
+    return false;
+
+  for (uint16_t index = 0; index < i_ByteCount; index++)
+    i_pOutput->print (m_pData[index], HEX2);
+  if (i_AppendNewLine)
+    i_pOutput->println ();
+
   return true;
 }

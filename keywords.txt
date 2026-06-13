@@ -12,7 +12,18 @@ ByteRingBuffer	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
+Create	KEYWORD2
+
+get_CurrentReadAddress	KEYWORD2
+get_CurrentWriteAddress	KEYWORD2
+get_pData	KEYWORD2
+get_Length	KEYWORD2
+
 Clear	KEYWORD2
+Clear_FromStart	KEYWORD2
+Clear_ToEnd	KEYWORD2
+Clear_StartToEnd	KEYWORD2
+
 MoveReadPointer	KEYWORD2
 MoveWritePointer	KEYWORD2
 SetReadPointer	KEYWORD2
@@ -26,9 +37,14 @@ WriteByteAndMovePtr	KEYWORD2
 WriteBytesAndMovePtr	KEYWORD2
 WriteValueAndMovePtr	KEYWORD2
 
-WriteRange_FromEnd	KEYWORD2
 WriteRange_FromStart	KEYWORD2
+WriteRange_ToEnd	KEYWORD2
 WriteRange_StartToEnd	KEYWORD2
+
+CalcChecksumCRC16_FromStart	KEYWORD2
+CalcChecksumCRC16_ToEnd	KEYWORD2
+CalcChecksumCRC16_StartToEnd	KEYWORD2
+Print	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)

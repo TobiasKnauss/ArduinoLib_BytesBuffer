@@ -7,6 +7,7 @@ uint8_t*  m_pSource           = new uint8_t[0];
 uint16_t  m_ByteCount         = 0;
 uint16_t  m_StartOffset       = 0;
 uint16_t  m_EndOffset         = 0;
+uint16_t  m_Checksum          = 0;
 
 bool      m_ValueBOOL = false;
 uint8_t   m_ValueUI8  = 0;
@@ -19,6 +20,10 @@ int32_t   m_ValueI32  = 0;
 void setup ()
 {
   ByteRingBuffer::Create (m_RingBufferLength, 0xFF, m_pRingBuffer);
+
+  m_pRingBuffer->Clear_FromStart  (m_StartOffset, m_ByteCount);
+  m_pRingBuffer->Clear_ToEnd      (m_EndOffset,   m_ByteCount);
+  m_pRingBuffer->Clear_StartToEnd (m_StartOffset, m_EndOffset);
 
   m_pRingBuffer->ReadBytesAndMovePtr (m_ByteCount, m_pDestination, false);
   m_pRingBuffer->ReadValueAndMovePtr (m_ValueBOOL);
@@ -45,6 +50,13 @@ void setup ()
   m_pRingBuffer->WriteRange_FromStart  (m_StartOffset, m_ByteCount, m_ValueUI8);
   m_pRingBuffer->WriteRange_ToEnd      (m_EndOffset,   m_ByteCount, m_ValueUI8);
   m_pRingBuffer->WriteRange_StartToEnd (m_StartOffset, m_EndOffset, m_ValueUI8);
+
+  m_pRingBuffer->CalcChecksumCRC16_FromStart  (m_StartOffset, m_ByteCount, m_Checksum);
+  m_pRingBuffer->CalcChecksumCRC16_ToEnd      (m_EndOffset,   m_ByteCount, m_Checksum);
+  m_pRingBuffer->CalcChecksumCRC16_StartToEnd (m_StartOffset, m_EndOffset, m_Checksum);
+
+  m_pRingBuffer->Print (&Serial);
+  m_pRingBuffer->Print (&Serial, 1, 2);
 }
 
 void loop ()
