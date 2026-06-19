@@ -68,6 +68,12 @@ uint8_t* ByteBuffer::get_pData ()
 }
 
 //--------------------------------------------------------------------
+uint16_t ByteBuffer::get_IsRingBuffer ()
+{
+  return m_IsRingBuffer;
+}
+
+//--------------------------------------------------------------------
 uint16_t ByteBuffer::get_Length ()
 {
   return m_DataLength;
@@ -235,6 +241,91 @@ bool ByteBuffer::ReadBytesAndMovePtr (uint16_t  i_ByteCount,
 }
 
 //--------------------------------------------------------------------
+//                                   Start   2nd   Copy   Remarks
+// Example 1)  Len = 3                      Block  Steps
+// Source,      L = 10: ____ABC___     4
+// Destination, L =  9: ______ABC      6      0      1    0x 2nd-block > 0
+// Destination, L = 10: ______ABC_     6      0      1    0x 2nd-block > 0
+// Destination, L = 11: ______ABC__    6      0      1    0x 2nd-block > 0
+//
+// Example 2)  Len = 5
+// Source,      L = 10: ____ABCDE_     4      0
+// Destination, L =  7: DE__ABC        4      2      2    1x 2nd-block > 0
+// Destination, L =  7: CDE__AB        5      3      2    1x 2nd-block > 0
+// Destination, L =  8: E___ABCD       4      1      2    1x 2nd-block > 0
+// Destination, L =  8: DE___ABC       5      2      2    1x 2nd-block > 0
+// Destination, L =  9: ____ABCDE      4      0      1    0x 2nd-block > 0
+// Destination, L =  9: E____ABCD      5      1      2    1x 2nd-block > 0
+// Destination, L = 11: ______ABCDE    6      0      1    0x 2nd-block > 0
+// Destination, L = 11: E______ABCD    7      1      2    1x 2nd-block > 0
+//
+// Example 3)  Len = 7
+// Source,      L =  9: DEFG__ABC      6      4
+// Destination, L =  8: DEFG_ABC       5      4      2    2x 2nd-block > 0, equal-sized
+// Destination, L =  9: DEFG__ABC      6      4      2    2x 2nd-block > 0, equal-sized
+// Destination, L = 10: DEFG___ABC     7      4      2    2x 2nd-block > 0, equal-sized
+// Destination, L = 10: ___ABCDEFG     3      0      2    1x 2nd-block > 0
+// Destination, L = 10: FG___ABCDE     5      2      3    2x 2nd-block > 0, different-sized
+// Destination, L = 10: CDEFG___AB     8      5      3    2x 2nd-block > 0, different-sized
+//
+bool ByteBuffer::ReadBytesAndMovePtr (uint16_t    i_ByteCount,
+                                      ByteBuffer* i_pDestination,
+                                      bool        i_InvertByteOrder)
+{
+  if (i_pDestination == nullptr)
+    return false;
+  if (i_ByteCount == 0)
+    return true;
+  if (i_ByteCount > m_DataLength)
+    return false;
+  if (i_ByteCount > i_pDestination->get_Length ())
+    return false;
+
+  uint16_t bytesUntilEndInSource = m_pAfterData - m_pCurrentRead;
+  if (!m_IsRingBuffer
+  &&  i_ByteCount > bytesUntilEndInSource)
+    return false;
+
+  uint16_t bytesUntilEndInDestination = i_pDestination->get_Length () - i_pDestination->get_CurrentWriteAddress ();
+  if (!i_pDestination->m_IsRingBuffer
+  &&  i_ByteCount > bytesUntilEndInDestination)
+    return false;
+
+  if (i_InvertByteOrder)
+  {
+    for (uint16_t index = 1; index <= i_ByteCount; index++)
+    {
+      uint8_t valueUI8;
+      if (!ReadValueAndMovePtr (valueUI8))
+        return false;  // should not happen because of previous check
+      if (!i_pDestination->WriteValueAndMovePtr (valueUI8))
+        return false;  // should not happen because of previous check
+    }
+    return true;
+  }
+
+  for (int pass = 1; pass <= 3; pass++)
+  {
+    bytesUntilEndInSource      = m_pAfterData                  - m_pCurrentRead;
+    bytesUntilEndInDestination = i_pDestination->get_Length () - i_pDestination->get_CurrentWriteAddress ();
+    uint16_t sizeOf2ndBlockInSource      = i_ByteCount > bytesUntilEndInSource      ? i_ByteCount - bytesUntilEndInSource      : 0;
+    uint16_t sizeOf2ndBlockInDestination = i_ByteCount > bytesUntilEndInDestination ? i_ByteCount - bytesUntilEndInDestination : 0;
+    uint16_t copySize = i_ByteCount - max (sizeOf2ndBlockInSource, sizeOf2ndBlockInDestination);
+
+    memcpy (i_pDestination->m_pCurrentWrite, m_pCurrentRead, copySize);
+    bool result = MoveReadPointer (i_ByteCount)
+               && i_pDestination->MoveWritePointer (i_ByteCount);
+    if (!result) return result;
+
+    i_ByteCount -= copySize;
+    if (i_ByteCount == 0)
+      return true;
+  }
+
+  return false;  // should not happen
+}
+
+//--------------------------------------------------------------------
 bool ByteBuffer::ReadValueAndMovePtr (bool& o_Value)
 {
   o_Value = m_pCurrentRead < m_pAfterData
@@ -327,6 +418,91 @@ bool ByteBuffer::WriteBytesAndMovePtr ( uint16_t  i_ByteCount,
   memcpy (m_pData        , i_pSource + bytesUntilEnd, sizeOf2ndBlock);
   m_pCurrentWrite = m_pData + sizeOf2ndBlock;
   return true;
+}
+
+//--------------------------------------------------------------------
+//                                   Start   2nd   Copy   Remarks
+// Example 1)  Len = 3                      Block  Steps
+// Destination, L = 10: ____ABC___     4
+// Source,      L =  9: ______ABC      6      0      1    0x 2nd-block > 0
+// Source,      L = 10: ______ABC_     6      0      1    0x 2nd-block > 0
+// Source,      L = 11: ______ABC__    6      0      1    0x 2nd-block > 0
+//
+// Example 2)  Len = 5
+// Destination, L = 10: ____ABCDE_     4      0
+// Source,      L =  7: DE__ABC        4      2      2    1x 2nd-block > 0
+// Source,      L =  7: CDE__AB        5      3      2    1x 2nd-block > 0
+// Source,      L =  8: E___ABCD       4      1      2    1x 2nd-block > 0
+// Source,      L =  8: DE___ABC       5      2      2    1x 2nd-block > 0
+// Source,      L =  9: ____ABCDE      4      0      1    0x 2nd-block > 0
+// Source,      L =  9: E____ABCD      5      1      2    1x 2nd-block > 0
+// Source,      L = 11: ______ABCDE    6      0      1    0x 2nd-block > 0
+// Source,      L = 11: E______ABCD    7      1      2    1x 2nd-block > 0
+//
+// Example 3)  Len = 7
+// Destination, L =  9: DEFG__ABC      6      4
+// Source,      L =  8: DEFG_ABC       5      4      2    2x 2nd-block > 0, equal-sized
+// Source,      L =  9: DEFG__ABC      6      4      2    2x 2nd-block > 0, equal-sized
+// Source,      L = 10: DEFG___ABC     7      4      2    2x 2nd-block > 0, equal-sized
+// Source,      L = 10: ___ABCDEFG     3      0      2    1x 2nd-block > 0
+// Source,      L = 10: FG___ABCDE     5      2      3    2x 2nd-block > 0, different-sized
+// Source,      L = 10: CDEFG___AB     8      5      3    2x 2nd-block > 0, different-sized
+//
+bool ByteBuffer::WriteBytesAndMovePtr ( uint16_t    i_ByteCount,
+                                        ByteBuffer* i_pSource,
+                                        bool        i_InvertByteOrder)
+{
+  if (i_pSource == nullptr)
+    return false;
+  if (i_ByteCount == 0)
+    return true;
+  if (i_ByteCount > m_DataLength)
+    return false;
+  if (i_ByteCount > i_pSource->get_Length ())
+    return false;
+
+  uint16_t bytesUntilEndInDestination = m_pAfterData - m_pCurrentWrite;
+  if (!m_IsRingBuffer
+  &&  i_ByteCount > bytesUntilEndInDestination)
+    return false;
+
+  uint16_t bytesUntilEndInSource = i_pSource->get_Length () - i_pSource->get_CurrentReadAddress ();
+  if (!i_pSource->m_IsRingBuffer
+  &&  i_ByteCount > bytesUntilEndInSource)
+    return false;
+
+  if (i_InvertByteOrder)
+  {
+    for (uint16_t index = 1; index <= i_ByteCount; index++)
+    {
+      uint8_t valueUI8;
+      if (!i_pSource->ReadValueAndMovePtr (valueUI8))
+        return false;  // should not happen because of previous check
+      if (!WriteValueAndMovePtr (valueUI8))
+        return false;  // should not happen because of previous check
+    }
+    return true;
+  }
+
+  for (int pass = 1; pass <= 3; pass++)
+  {
+    bytesUntilEndInDestination = m_pAfterData             - m_pCurrentWrite;
+    bytesUntilEndInSource      = i_pSource->get_Length () - i_pSource->get_CurrentReadAddress ();
+    uint16_t sizeOf2ndBlockInDestination = i_ByteCount > bytesUntilEndInDestination ? i_ByteCount - bytesUntilEndInDestination : 0;
+    uint16_t sizeOf2ndBlockInSource      = i_ByteCount > bytesUntilEndInSource      ? i_ByteCount - bytesUntilEndInSource      : 0;
+    uint16_t copySize = i_ByteCount - max (sizeOf2ndBlockInDestination, sizeOf2ndBlockInSource);
+
+    memcpy (m_pCurrentWrite, i_pSource->m_pCurrentRead, copySize);
+    bool result = MoveWritePointer (i_ByteCount)
+               && i_pSource->MoveReadPointer (i_ByteCount);
+    if (!result) return result;
+
+    i_ByteCount -= copySize;
+    if (i_ByteCount == 0)
+      return true;
+  }
+
+  return false;  // should not happen
 }
 
 //--------------------------------------------------------------------

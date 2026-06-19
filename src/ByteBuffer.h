@@ -51,6 +51,7 @@ public:
 
   uint8_t* get_pData ();
 
+  uint16_t get_IsRingBuffer ();
   uint16_t get_Length ();
 
 //==================== Public Methods ====================
@@ -111,6 +112,12 @@ public:
                             uint8_t*  i_pDestination,
                             bool      i_InvertByteOrder);
 
+  // Read the specified number of bytes from the ring buffer to the given destination buffer and move the pointer forward.
+  // If the end of the ring buffer is reached, wrap the pointer around to the buffer start.
+  bool ReadBytesAndMovePtr (uint16_t    i_ByteCount,
+                            ByteBuffer* i_pDestination,
+                            bool        i_InvertByteOrder);
+
   //--------------------------------------------------------------------
   // ReadValueAndMovePtr
 
@@ -154,6 +161,12 @@ public:
   bool WriteBytesAndMovePtr ( uint16_t  i_ByteCount,
                               uint8_t*  i_pSource,
                               bool      i_InvertByteOrder);
+
+  // Write the specified number of bytes from the given source buffer to the ring buffer and move the pointer forward.
+  // If the end of the ring buffer is reached, wrap the pointer around to the buffer start.
+  bool WriteBytesAndMovePtr ( uint16_t    i_ByteCount,
+                              ByteBuffer* i_pSource,
+                              bool        i_InvertByteOrder);
 
   //--------------------------------------------------------------------
   // WriteValueAndMovePtr

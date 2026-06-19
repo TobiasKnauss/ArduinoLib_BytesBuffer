@@ -4,7 +4,7 @@
 
 //--------------------------------------------------------------------
 // - ReadBytesAndMovePtr ()
-test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_Test1)
+test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToArray_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
@@ -15,9 +15,9 @@ test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_Test1)
   uint8_t cache[10];
 
   //---------- Act & Assert ----------
-  assertFalse (pRingBuffer->ReadBytesAndMovePtr (0,  nullptr, false));
-  assertFalse (pRingBuffer->ReadBytesAndMovePtr (1,  nullptr, false));
-  assertFalse (pRingBuffer->ReadBytesAndMovePtr (10, nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (0,  (uint8_t*)nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (1,  (uint8_t*)nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (10, (uint8_t*)nullptr, false));
   assertTrue  (pRingBuffer->ReadBytesAndMovePtr (0,  cache, false));
   assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1,  cache, false));
   assertTrue  (pRingBuffer->ReadBytesAndMovePtr (2,  cache, false));
@@ -36,7 +36,7 @@ test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_Test1)
 //--------------------------------------------------------------------
 // - ReadBytesAndMovePtr ()
 // - get_pData ()
-test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_Test2)
+test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToArray_Test2)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
@@ -93,6 +93,105 @@ test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_Test2)
   //---------- Cleanup ----------
   delete (pRingBuffer);
 }
+
+//--------------------------------------------------------------------
+// - ReadBytesAndMovePtr ()
+test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToLinearBuffer_Test1)
+{
+  //---------- Arrange ----------
+  uint8_t defaultValue = 0xAB;
+  uint16_t length = 9;
+  ByteBuffer* pRingBuffer = nullptr;
+  bool result = ByteBuffer::Create (length, defaultValue, true, pRingBuffer);
+  assertTrue (result);
+
+  ByteBuffer* pDestLinearBuffer8;
+  ByteBuffer* pDestLinearBuffer10;
+  assertTrue (ByteBuffer::Create ( 8, defaultValue, false, pDestLinearBuffer8));
+  assertTrue (ByteBuffer::Create (10, defaultValue, false, pDestLinearBuffer10));
+
+  //---------- Act & Assert ----------
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (0,  (ByteBuffer*)nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (1,  (ByteBuffer*)nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (10, (ByteBuffer*)nullptr, false));
+
+  pDestLinearBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (0,  pDestLinearBuffer8, false));
+  pDestLinearBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1,  pDestLinearBuffer8, false));
+  pDestLinearBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (2,  pDestLinearBuffer8, false));
+  pDestLinearBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (8,  pDestLinearBuffer8, false));
+  pDestLinearBuffer8->SetWritePointer (0); assertFalse (pRingBuffer->ReadBytesAndMovePtr (9,  pDestLinearBuffer8, false));
+  pDestLinearBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (0,  pDestLinearBuffer8, true));
+  pDestLinearBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1,  pDestLinearBuffer8, true));
+  pDestLinearBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (2,  pDestLinearBuffer8, true));
+  pDestLinearBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (8,  pDestLinearBuffer8, true));
+  pDestLinearBuffer8->SetWritePointer (0); assertFalse (pRingBuffer->ReadBytesAndMovePtr (9,  pDestLinearBuffer8, true));
+
+  pDestLinearBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (0,  pDestLinearBuffer10, false));
+  pDestLinearBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1,  pDestLinearBuffer10, false));
+  pDestLinearBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (2,  pDestLinearBuffer10, false));
+  pDestLinearBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (10, pDestLinearBuffer10, false));
+  pDestLinearBuffer10->SetWritePointer (0); assertFalse (pRingBuffer->ReadBytesAndMovePtr (11, pDestLinearBuffer10, false));
+  pDestLinearBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (0,  pDestLinearBuffer10, true));
+  pDestLinearBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1,  pDestLinearBuffer10, true));
+  pDestLinearBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (2,  pDestLinearBuffer10, true));
+  pDestLinearBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (10, pDestLinearBuffer10, true));
+  pDestLinearBuffer10->SetWritePointer (0); assertFalse (pRingBuffer->ReadBytesAndMovePtr (11, pDestLinearBuffer10, true));
+
+  //---------- Cleanup ----------
+  delete (pRingBuffer);
+}
+
+
+
+
+//--------------------------------------------------------------------
+// - ReadBytesAndMovePtr ()
+test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToRingBuffer_Test1)
+{
+  //---------- Arrange ----------
+  uint8_t defaultValue = 0xAB;
+  uint16_t length = 9;
+  ByteBuffer* pRingBuffer = nullptr;
+  bool result = ByteBuffer::Create (length, defaultValue, true, pRingBuffer);
+  assertTrue (result);
+
+  ByteBuffer* pDestRingBuffer8;
+  ByteBuffer* pDestRingBuffer10;
+  assertTrue (ByteBuffer::Create ( 8, defaultValue, true, pDestRingBuffer8));
+  assertTrue (ByteBuffer::Create (10, defaultValue, true, pDestRingBuffer10));
+
+  //---------- Act & Assert ----------
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (0,  (ByteBuffer*)nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (1,  (ByteBuffer*)nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (10, (ByteBuffer*)nullptr, false));
+
+  pDestRingBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (0,  pDestRingBuffer8, false));
+  pDestRingBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1,  pDestRingBuffer8, false));
+  pDestRingBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (2,  pDestRingBuffer8, false));
+  pDestRingBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (8,  pDestRingBuffer8, false));
+  pDestRingBuffer8->SetWritePointer (0); assertFalse (pRingBuffer->ReadBytesAndMovePtr (9,  pDestRingBuffer8, false));
+  pDestRingBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (0,  pDestRingBuffer8, true));
+  pDestRingBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1,  pDestRingBuffer8, true));
+  pDestRingBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (2,  pDestRingBuffer8, true));
+  pDestRingBuffer8->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (8,  pDestRingBuffer8, true));
+  pDestRingBuffer8->SetWritePointer (0); assertFalse (pRingBuffer->ReadBytesAndMovePtr (9,  pDestRingBuffer8, true));
+
+  pDestRingBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (0,  pDestRingBuffer10, false));
+  pDestRingBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1,  pDestRingBuffer10, false));
+  pDestRingBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (2,  pDestRingBuffer10, false));
+  pDestRingBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (10, pDestRingBuffer10, false));
+  pDestRingBuffer10->SetWritePointer (0); assertFalse (pRingBuffer->ReadBytesAndMovePtr (11, pDestRingBuffer10, false));
+  pDestRingBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (0,  pDestRingBuffer10, true));
+  pDestRingBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1,  pDestRingBuffer10, true));
+  pDestRingBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (2,  pDestRingBuffer10, true));
+  pDestRingBuffer10->SetWritePointer (0); assertTrue  (pRingBuffer->ReadBytesAndMovePtr (10, pDestRingBuffer10, true));
+  pDestRingBuffer10->SetWritePointer (0); assertFalse (pRingBuffer->ReadBytesAndMovePtr (11, pDestRingBuffer10, true));
+
+  //---------- Cleanup ----------
+  delete (pRingBuffer);
+}
+
+
 
 //--------------------------------------------------------------------
 // - ReadValueAndMovePtr ()

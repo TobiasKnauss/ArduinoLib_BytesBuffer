@@ -1,13 +1,15 @@
 #include "ByteBuffer.h"
 
-ByteBuffer* m_pByteBuffer = nullptr;
-uint16_t  m_ByteBufferLength  = 0;
-uint8_t*  m_pDestination      = nullptr;
-uint8_t*  m_pSource           = new uint8_t[0];
-uint16_t  m_ByteCount         = 0;
-uint16_t  m_StartOffset       = 0;
-uint16_t  m_EndOffset         = 0;
-uint16_t  m_Checksum          = 0;
+ByteBuffer* m_pByteBuffer         = nullptr;
+uint16_t    m_ByteBufferLength    = 0;
+uint8_t*    m_pDestinationArray   = nullptr;
+ByteBuffer* m_pDestinationBuffer  = nullptr;
+uint8_t*    m_pSourceArray        = new uint8_t[0];
+ByteBuffer* m_pSourceBuffer       = nullptr;
+uint16_t    m_ByteCount           = 0;
+uint16_t    m_StartOffset         = 0;
+uint16_t    m_EndOffset           = 0;
+uint16_t    m_Checksum            = 0;
 
 bool      m_ValueBOOL = false;
 uint8_t   m_ValueUI8  = 0;
@@ -25,7 +27,8 @@ void setup ()
   m_pByteBuffer->Clear_To     (m_EndOffset,   m_ByteCount);
   m_pByteBuffer->Clear_FromTo (m_StartOffset, m_EndOffset);
 
-  m_pByteBuffer->ReadBytesAndMovePtr (m_ByteCount, m_pDestination, false);
+  m_pByteBuffer->ReadBytesAndMovePtr (m_ByteCount, m_pDestinationArray, false);
+  m_pByteBuffer->ReadBytesAndMovePtr (m_ByteCount, m_pDestinationBuffer, false);
   m_pByteBuffer->ReadValueAndMovePtr (m_ValueBOOL);
   m_pByteBuffer->ReadValueAndMovePtr (m_ValueUI8);
   m_pByteBuffer->ReadValueAndMovePtr (m_ValueI8);
@@ -36,7 +39,8 @@ void setup ()
   m_pByteBuffer->MoveReadPointer ();
   m_pByteBuffer->SetReadPointer (1);
 
-  m_pByteBuffer->WriteBytesAndMovePtr (m_ByteCount, m_pSource, false);
+  m_pByteBuffer->WriteBytesAndMovePtr (m_ByteCount, m_pSourceArray, false);
+  m_pByteBuffer->WriteBytesAndMovePtr (m_ByteCount, m_pSourceBuffer, false);
   m_pByteBuffer->WriteValueAndMovePtr (m_ValueBOOL);
   m_pByteBuffer->WriteValueAndMovePtr (m_ValueUI8);
   m_pByteBuffer->WriteValueAndMovePtr (m_ValueI8);
