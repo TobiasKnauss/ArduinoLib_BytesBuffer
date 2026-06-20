@@ -361,9 +361,10 @@ bool ByteBuffer::ReadBytesAndMovePtr (uint16_t    i_ByteCount,
     uint16_t copySize = i_ByteCount - max (sizeOf2ndBlockInSource, sizeOf2ndBlockInDestination);
 
     memcpy (i_pDestination->m_pCurrentWrite, m_pCurrentRead, copySize);
-    bool result = MoveReadPointer (i_ByteCount)
-               && i_pDestination->MoveWritePointer (i_ByteCount);
-    if (!result) return result;
+    if (!MoveReadPointer (copySize))
+      return false;
+    if (!i_pDestination->MoveWritePointer (copySize))
+      return false;
 
     i_ByteCount -= copySize;
     if (i_ByteCount == 0)
@@ -553,9 +554,10 @@ bool ByteBuffer::WriteBytesAndMovePtr ( uint16_t    i_ByteCount,
     uint16_t copySize = i_ByteCount - max (sizeOf2ndBlockInDestination, sizeOf2ndBlockInSource);
 
     memcpy (m_pCurrentWrite, i_pSource->m_pCurrentRead, copySize);
-    bool result = MoveWritePointer (i_ByteCount)
-               && i_pSource->MoveReadPointer (i_ByteCount);
-    if (!result) return result;
+    if (!MoveWritePointer (copySize))
+      return false;
+    if (!i_pSource->MoveReadPointer (copySize))
+      return false;
 
     i_ByteCount -= copySize;
     if (i_ByteCount == 0)
