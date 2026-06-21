@@ -148,7 +148,7 @@ test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToLinearBuffer_Test1)
   for (uint16_t index = 0; index < destLength; index++) assertEqual (pDestBuffer->get_pData()[index], index < 3 ? (uint8_t)((index + 1) * 11) : defaultValue);
 
   assertTrue  (pRingBuffer->ReadBytesAndMovePtr (5, pDestBuffer, false));
-  assertFalse (pRingBuffer->ReadBytesAndMovePtr (1, pDestBuffer, true));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (1, pDestBuffer, false));
   assertEqual (pRingBuffer->get_CurrentReadAddress  (), (uint16_t)8);
   assertEqual (pRingBuffer->get_CurrentWriteAddress (), (uint16_t)0);
   assertEqual (pDestBuffer->get_CurrentReadAddress  (), (uint16_t)0);

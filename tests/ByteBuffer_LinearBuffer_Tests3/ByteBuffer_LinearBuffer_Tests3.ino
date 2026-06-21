@@ -216,7 +216,7 @@ test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromLinearBuffer_Test2)
 
   uint16_t srcLength = 10;
   ByteBuffer* pSrcBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (srcLength, defaultValue, false, pSrcBuffer));  // destination is linear buffer
+  assertTrue (ByteBuffer::Create (srcLength, defaultValue, false, pSrcBuffer));  // source is linear buffer
   for (uint16_t index = 0; index < srcLength; index++)
     pSrcBuffer->get_pData ()[index] = (uint8_t)((index + 1) * 11);  // -> 11 22 33 44 55 66 77 88 99 110 =  0x 0B 16 21 2C 37 42 4D 58 63 6E
 
