@@ -17,6 +17,7 @@ Create	KEYWORD2
 get_CurrentReadAddress	KEYWORD2
 get_CurrentWriteAddress	KEYWORD2
 get_pData	KEYWORD2
+get_IsRingBuffer	KEYWORD2
 get_Length	KEYWORD2
 
 Clear	KEYWORD2
@@ -25,17 +26,19 @@ Clear_To	KEYWORD2
 Clear_FromTo	KEYWORD2
 
 MoveReadPointer	KEYWORD2
+MoveReadPointerBackward	KEYWORD2
 MoveWritePointer	KEYWORD2
+MoveWritePointerBackward	KEYWORD2
 SetReadPointer	KEYWORD2
 SetWritePointer	KEYWORD2
 
-ReadByteAndMovePtr	KEYWORD2
 ReadBytesAndMovePtr	KEYWORD2
 ReadValueAndMovePtr	KEYWORD2
+MovePtrBackAndReadValue	KEYWORD2
 
-WriteByteAndMovePtr	KEYWORD2
 WriteBytesAndMovePtr	KEYWORD2
 WriteValueAndMovePtr	KEYWORD2
+MovePtrBackAndWriteValue	KEYWORD2
 
 WriteRange_From	KEYWORD2
 WriteRange_To	KEYWORD2

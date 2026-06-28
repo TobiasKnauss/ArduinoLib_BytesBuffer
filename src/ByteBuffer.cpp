@@ -1,8 +1,5 @@
 #include <FastCRC.h>
-#include "MemoryTools_Memory.h"
 #include "ByteBuffer.h"
-
-using namespace MemoryTools;
 
 //--------------------------------------------------------------------
 bool ByteBuffer::Create ( uint16_t      i_DataLength,
@@ -16,9 +13,11 @@ bool ByteBuffer::Create ( uint16_t      i_DataLength,
   if (o_pByteBuffer != nullptr)
     return false;
 
-  uint8_t* pData = nullptr;
-  if (!Memory::Allocate (pData, i_DataLength, i_DefaultValue))
+  uint8_t* pData = new uint8_t[i_DataLength];
+  if (pData == nullptr)
     return false;
+
+  memset (pData, i_DefaultValue, i_DataLength);
 
   o_pByteBuffer = new ByteBuffer (pData, i_DataLength, i_DefaultValue, i_IsRingBuffer);
   return true;
