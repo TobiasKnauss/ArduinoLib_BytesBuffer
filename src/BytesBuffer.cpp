@@ -1,31 +1,31 @@
 #include <FastCRC.h>
 #include "MemoryTools_Memory.h"
-#include "ByteBuffer.h"
+#include "BytesBuffer.h"
 
 using namespace MemoryTools;
 
 //--------------------------------------------------------------------
-bool ByteBuffer::Create ( uint16_t      i_DataLength,
+bool BytesBuffer::Create (uint16_t      i_DataLength,
                           uint8_t       i_DefaultValue,
                           bool          i_IsRingBuffer,
-                          ByteBuffer*&  o_pByteBuffer)
+                          BytesBuffer*& o_pBytesBuffer)
 {
   if (i_DataLength < 1
   ||  i_DataLength > c_MaxBufferSize)
     return false;
-  if (o_pByteBuffer != nullptr)
+  if (o_pBytesBuffer != nullptr)
     return false;
 
   uint8_t* pData = nullptr;
   if (!Memory::Allocate (pData, i_DataLength, i_DefaultValue))
     return false;
 
-  o_pByteBuffer = new ByteBuffer (pData, i_DataLength, i_DefaultValue, i_IsRingBuffer);
+  o_pBytesBuffer = new BytesBuffer (pData, i_DataLength, i_DefaultValue, i_IsRingBuffer);
   return true;
 }
 
 //--------------------------------------------------------------------
-ByteBuffer::~ByteBuffer ()
+BytesBuffer::~BytesBuffer ()
 {
   delete (m_pData);
   m_pData         = nullptr;
@@ -35,10 +35,10 @@ ByteBuffer::~ByteBuffer ()
 }
 
 //--------------------------------------------------------------------
-ByteBuffer::ByteBuffer (uint8_t*  i_pData,
-                        uint16_t  i_DataLength,
-                        uint8_t   i_DefaultValue,
-                        bool      i_IsRingBuffer)
+BytesBuffer::BytesBuffer (uint8_t*  i_pData,
+                          uint16_t  i_DataLength,
+                          uint8_t   i_DefaultValue,
+                          bool      i_IsRingBuffer)
 {
   m_pData         = i_pData;
   m_DataLength    = i_DataLength;
@@ -50,64 +50,64 @@ ByteBuffer::ByteBuffer (uint8_t*  i_pData,
 }
 
 //--------------------------------------------------------------------
-uint16_t ByteBuffer::get_CurrentReadAddress ()
+uint16_t BytesBuffer::get_CurrentReadAddress ()
 {
   return m_pCurrentRead - m_pData;
 }
 
 //--------------------------------------------------------------------
-uint16_t ByteBuffer::get_CurrentWriteAddress ()
+uint16_t BytesBuffer::get_CurrentWriteAddress ()
 {
   return m_pCurrentWrite - m_pData;
 }
 
 //--------------------------------------------------------------------
-uint8_t* ByteBuffer::get_pData ()
+uint8_t* BytesBuffer::get_pData ()
 {
   return m_pData;
 }
 
 //--------------------------------------------------------------------
-uint16_t ByteBuffer::get_IsRingBuffer ()
+uint16_t BytesBuffer::get_IsRingBuffer ()
 {
   return m_IsRingBuffer;
 }
 
 //--------------------------------------------------------------------
-uint16_t ByteBuffer::get_Length ()
+uint16_t BytesBuffer::get_Length ()
 {
   return m_DataLength;
 }
 
 //--------------------------------------------------------------------
-void ByteBuffer::Clear ()
+void BytesBuffer::Clear ()
 {
   memset (m_pData, m_DefaultValue, m_DataLength);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::Clear_From ( uint16_t  i_StartAddress,
+bool BytesBuffer::Clear_From (uint16_t  i_StartAddress,
                               uint16_t  i_ByteCount)
 {
   return WriteRange_From (i_StartAddress, i_ByteCount, m_DefaultValue);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::Clear_To ( uint16_t  i_EndAddress,
+bool BytesBuffer::Clear_To (uint16_t  i_EndAddress,
                             uint16_t  i_ByteCount)
 {
   return WriteRange_To (i_EndAddress, i_ByteCount, m_DefaultValue);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::Clear_FromTo ( uint16_t  i_StartAddress,
+bool BytesBuffer::Clear_FromTo (uint16_t  i_StartAddress,
                                 uint16_t  i_EndAddress)
 {
   return WriteRange_FromTo (i_StartAddress, i_EndAddress, m_DefaultValue);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::MoveReadPointer (uint16_t i_Count)
+bool BytesBuffer::MoveReadPointer (uint16_t i_Count)
 {
   uint8_t* pCurrentRead = m_pCurrentRead + i_Count;
 
@@ -130,7 +130,7 @@ bool ByteBuffer::MoveReadPointer (uint16_t i_Count)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::MoveReadPointerBackward (uint16_t i_Count)
+bool BytesBuffer::MoveReadPointerBackward (uint16_t i_Count)
 {
   uint8_t* pCurrentRead = m_pCurrentRead - i_Count;
 
@@ -153,7 +153,7 @@ bool ByteBuffer::MoveReadPointerBackward (uint16_t i_Count)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::MoveWritePointer (uint16_t i_Count)
+bool BytesBuffer::MoveWritePointer (uint16_t i_Count)
 {
   uint8_t* pCurrentWrite = m_pCurrentWrite + i_Count;
 
@@ -176,7 +176,7 @@ bool ByteBuffer::MoveWritePointer (uint16_t i_Count)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::MoveWritePointerBackward (uint16_t i_Count)
+bool BytesBuffer::MoveWritePointerBackward (uint16_t i_Count)
 {
   uint8_t* pCurrentWrite = m_pCurrentWrite - i_Count;
 
@@ -199,7 +199,7 @@ bool ByteBuffer::MoveWritePointerBackward (uint16_t i_Count)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::SetReadPointer ( uint16_t  i_Address,
+bool BytesBuffer::SetReadPointer (uint16_t  i_Address,
                                   bool      i_WrapIfNeeded)
 {
   if (!m_IsRingBuffer)  // Notice: The pointer of a linear buffer may point to the first position after the buffer, but not to any position beyond that.
@@ -222,8 +222,8 @@ bool ByteBuffer::SetReadPointer ( uint16_t  i_Address,
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::SetWritePointer (uint16_t  i_Address,
-                                  bool      i_WrapIfNeeded)
+bool BytesBuffer::SetWritePointer ( uint16_t  i_Address,
+                                    bool      i_WrapIfNeeded)
 {
   if (!m_IsRingBuffer)  // Notice: The pointer of a linear buffer may point to the first position after the buffer, but not to any position beyond that.
   {
@@ -245,9 +245,9 @@ bool ByteBuffer::SetWritePointer (uint16_t  i_Address,
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::ReadBytesAndMovePtr (uint16_t  i_ByteCount,
-                                      uint8_t*  i_pDestination,
-                                      bool      i_InvertByteOrder)
+bool BytesBuffer::ReadBytesAndMovePtr ( uint16_t  i_ByteCount,
+                                        uint8_t*  i_pDestination,
+                                        bool      i_InvertByteOrder)
 {
   if (i_pDestination == nullptr)
     return false;
@@ -314,9 +314,9 @@ bool ByteBuffer::ReadBytesAndMovePtr (uint16_t  i_ByteCount,
 // Destination, L = 10: FG___ABCDE     5      2      3    2x 2nd-block > 0, different-sized
 // Destination, L = 10: CDEFG___AB     8      5      3    2x 2nd-block > 0, different-sized
 //
-bool ByteBuffer::ReadBytesAndMovePtr (uint16_t    i_ByteCount,
-                                      ByteBuffer* i_pDestination,
-                                      bool        i_InvertByteOrder)
+bool BytesBuffer::ReadBytesAndMovePtr ( uint16_t      i_ByteCount,
+                                        BytesBuffer*  i_pDestination,
+                                        bool          i_InvertByteOrder)
 {
   if (i_pDestination == nullptr)
     return false;
@@ -375,7 +375,7 @@ bool ByteBuffer::ReadBytesAndMovePtr (uint16_t    i_ByteCount,
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::ReadValueAndMovePtr (bool& o_Value)
+bool BytesBuffer::ReadValueAndMovePtr (bool& o_Value)
 {
   o_Value = m_pCurrentRead < m_pAfterData
           ? *m_pCurrentRead != 0
@@ -384,7 +384,7 @@ bool ByteBuffer::ReadValueAndMovePtr (bool& o_Value)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::ReadValueAndMovePtr (uint8_t& o_Value)
+bool BytesBuffer::ReadValueAndMovePtr (uint8_t& o_Value)
 {
   o_Value = m_pCurrentRead < m_pAfterData
           ? *m_pCurrentRead
@@ -393,7 +393,7 @@ bool ByteBuffer::ReadValueAndMovePtr (uint8_t& o_Value)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::ReadValueAndMovePtr (int8_t& o_Value)
+bool BytesBuffer::ReadValueAndMovePtr (int8_t& o_Value)
 {
   o_Value = m_pCurrentRead < m_pAfterData
           ? (int8_t)*m_pCurrentRead
@@ -402,35 +402,35 @@ bool ByteBuffer::ReadValueAndMovePtr (int8_t& o_Value)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::ReadValueAndMovePtr (uint16_t& o_Value,
-                                      bool      i_InvertByteOrder)
+bool BytesBuffer::ReadValueAndMovePtr ( uint16_t& o_Value,
+                                        bool      i_InvertByteOrder)
 {
   return ReadBytesAndMovePtr (sizeof (uint16_t), (uint8_t*)&o_Value, i_InvertByteOrder);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::ReadValueAndMovePtr (int16_t&  o_Value,
-                                      bool      i_InvertByteOrder)
+bool BytesBuffer::ReadValueAndMovePtr ( int16_t&  o_Value,
+                                        bool      i_InvertByteOrder)
 {
   return ReadBytesAndMovePtr (sizeof (int16_t), (uint8_t*)&o_Value, i_InvertByteOrder);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::ReadValueAndMovePtr (uint32_t& o_Value,
-                                      bool      i_InvertByteOrder)
+bool BytesBuffer::ReadValueAndMovePtr ( uint32_t& o_Value,
+                                        bool      i_InvertByteOrder)
 {
   return ReadBytesAndMovePtr (sizeof (uint32_t), (uint8_t*)&o_Value, i_InvertByteOrder);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::ReadValueAndMovePtr (int32_t&  o_Value,
-                                      bool      i_InvertByteOrder)
+bool BytesBuffer::ReadValueAndMovePtr ( int32_t&  o_Value,
+                                        bool      i_InvertByteOrder)
 {
   return ReadBytesAndMovePtr (sizeof (int32_t), (uint8_t*)&o_Value, i_InvertByteOrder);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::MovePtrBackAndReadValue (uint8_t& o_Value)
+bool BytesBuffer::MovePtrBackAndReadValue (uint8_t& o_Value)
 {
   if (!MoveReadPointerBackward ())
     return false;
@@ -440,7 +440,7 @@ bool ByteBuffer::MovePtrBackAndReadValue (uint8_t& o_Value)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteBytesAndMovePtr ( uint16_t  i_ByteCount,
+bool BytesBuffer::WriteBytesAndMovePtr (uint16_t  i_ByteCount,
                                         uint8_t*  i_pSource,
                                         bool      i_InvertByteOrder)
 {
@@ -507,9 +507,9 @@ bool ByteBuffer::WriteBytesAndMovePtr ( uint16_t  i_ByteCount,
 // Source,      L = 10: FG___ABCDE     5      2      3    2x 2nd-block > 0, different-sized
 // Source,      L = 10: CDEFG___AB     8      5      3    2x 2nd-block > 0, different-sized
 //
-bool ByteBuffer::WriteBytesAndMovePtr ( uint16_t    i_ByteCount,
-                                        ByteBuffer* i_pSource,
-                                        bool        i_InvertByteOrder)
+bool BytesBuffer::WriteBytesAndMovePtr (uint16_t      i_ByteCount,
+                                        BytesBuffer*  i_pSource,
+                                        bool          i_InvertByteOrder)
 {
   if (i_pSource == nullptr)
     return false;
@@ -568,7 +568,7 @@ bool ByteBuffer::WriteBytesAndMovePtr ( uint16_t    i_ByteCount,
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteValueAndMovePtr (bool i_Value)
+bool BytesBuffer::WriteValueAndMovePtr (bool i_Value)
 {
   if (m_pCurrentWrite < m_pAfterData)
     *m_pCurrentWrite = i_Value ? 1 : 0;
@@ -576,7 +576,7 @@ bool ByteBuffer::WriteValueAndMovePtr (bool i_Value)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteValueAndMovePtr (uint8_t i_Value)
+bool BytesBuffer::WriteValueAndMovePtr (uint8_t i_Value)
 {
   if (m_pCurrentWrite < m_pAfterData)
     *m_pCurrentWrite = i_Value;
@@ -584,7 +584,7 @@ bool ByteBuffer::WriteValueAndMovePtr (uint8_t i_Value)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteValueAndMovePtr (int8_t i_Value)
+bool BytesBuffer::WriteValueAndMovePtr (int8_t i_Value)
 {
   if (m_pCurrentWrite < m_pAfterData)
     *m_pCurrentWrite = i_Value;
@@ -592,35 +592,35 @@ bool ByteBuffer::WriteValueAndMovePtr (int8_t i_Value)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteValueAndMovePtr ( uint16_t  i_Value,
+bool BytesBuffer::WriteValueAndMovePtr (uint16_t  i_Value,
                                         bool      i_InvertByteOrder)
 {
   return WriteBytesAndMovePtr (sizeof (uint16_t), (uint8_t*)&i_Value, i_InvertByteOrder);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteValueAndMovePtr ( int16_t   i_Value,
+bool BytesBuffer::WriteValueAndMovePtr (int16_t   i_Value,
                                         bool      i_InvertByteOrder)
 {
   return WriteBytesAndMovePtr (sizeof (int16_t), (uint8_t*)&i_Value, i_InvertByteOrder);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteValueAndMovePtr ( uint32_t  i_Value,
+bool BytesBuffer::WriteValueAndMovePtr (uint32_t  i_Value,
                                         bool      i_InvertByteOrder)
 {
   return WriteBytesAndMovePtr (sizeof (uint32_t), (uint8_t*)&i_Value, i_InvertByteOrder);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteValueAndMovePtr ( int32_t   i_Value,
+bool BytesBuffer::WriteValueAndMovePtr (int32_t   i_Value,
                                         bool      i_InvertByteOrder)
 {
   return WriteBytesAndMovePtr (sizeof (int32_t), (uint8_t*)&i_Value, i_InvertByteOrder);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::MovePtrBackAndWriteValue (uint8_t i_Value)
+bool BytesBuffer::MovePtrBackAndWriteValue (uint8_t i_Value)
 {
   if (!MoveWritePointerBackward ())
     return false;
@@ -630,9 +630,9 @@ bool ByteBuffer::MovePtrBackAndWriteValue (uint8_t i_Value)
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteRange_From (uint16_t  i_StartAddress,
-                                  uint16_t  i_ByteCount,
-                                  uint8_t   i_Value)
+bool BytesBuffer::WriteRange_From ( uint16_t  i_StartAddress,
+                                    uint16_t  i_ByteCount,
+                                    uint8_t   i_Value)
 {
   if (i_StartAddress >= m_DataLength)
     return false;
@@ -658,9 +658,9 @@ bool ByteBuffer::WriteRange_From (uint16_t  i_StartAddress,
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteRange_To (uint16_t  i_EndAddress,  //                ex.1: 6    ex.2: 3    --> ex.1: writing ___xxx__
-                                uint16_t  i_ByteCount,   //                ex.1: 3    ex.2: 6        ex.2: writing xxx__xxx
-                                uint8_t   i_Value)       // m_DataLength:  ex.1: 8    ex.2: 8
+bool BytesBuffer::WriteRange_To ( uint16_t  i_EndAddress,  //                ex.1: 6    ex.2: 3    --> ex.1: writing ___xxx__
+                                  uint16_t  i_ByteCount,   //                ex.1: 3    ex.2: 6        ex.2: writing xxx__xxx
+                                  uint8_t   i_Value)       // m_DataLength:  ex.1: 8    ex.2: 8
 {
   if (m_IsRingBuffer)
   {
@@ -696,9 +696,9 @@ bool ByteBuffer::WriteRange_To (uint16_t  i_EndAddress,  //                ex.1:
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::WriteRange_FromTo (uint16_t  i_StartAddress,  //                ex.1: 3    ex.2: 6    --> ex.1: writing ___xxx__
-                                    uint16_t  i_EndAddress,    //                ex.1: 6    ex.2: 3        ex.2: writing xxx___xx
-                                    uint8_t   i_Value)         // m_DataLength:  ex.1: 8    ex.2: 8
+bool BytesBuffer::WriteRange_FromTo ( uint16_t  i_StartAddress,  //                ex.1: 3    ex.2: 6    --> ex.1: writing ___xxx__
+                                      uint16_t  i_EndAddress,    //                ex.1: 6    ex.2: 3        ex.2: writing xxx___xx
+                                      uint8_t   i_Value)         // m_DataLength:  ex.1: 8    ex.2: 8
 {
   if (i_StartAddress >= m_DataLength)  // ex.1,2: m_DataLength == 8  --> i_StartAddress may be 0 to 7.
     return false;
@@ -732,7 +732,7 @@ bool ByteBuffer::WriteRange_FromTo (uint16_t  i_StartAddress,  //               
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::CalcChecksumCRC16_From ( uint16_t  i_StartAddress,
+bool BytesBuffer::CalcChecksumCRC16_From (uint16_t  i_StartAddress,
                                           uint16_t  i_ByteCount,
                                           uint16_t& o_Checksum)
 {
@@ -763,7 +763,7 @@ bool ByteBuffer::CalcChecksumCRC16_From ( uint16_t  i_StartAddress,
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::CalcChecksumCRC16_To ( uint16_t  i_EndAddress,
+bool BytesBuffer::CalcChecksumCRC16_To (uint16_t  i_EndAddress,
                                         uint16_t  i_ByteCount,
                                         uint16_t& o_Checksum)
 {
@@ -803,7 +803,7 @@ bool ByteBuffer::CalcChecksumCRC16_To ( uint16_t  i_EndAddress,
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::CalcChecksumCRC16_FromTo ( uint16_t  i_StartAddress,
+bool BytesBuffer::CalcChecksumCRC16_FromTo (uint16_t  i_StartAddress,
                                             uint16_t  i_EndAddress,
                                             uint16_t& o_Checksum)
 {
@@ -840,17 +840,17 @@ bool ByteBuffer::CalcChecksumCRC16_FromTo ( uint16_t  i_StartAddress,
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::Print (Stream* i_pOutput,
-                        bool    i_AppendNewLine)
+bool BytesBuffer::Print ( Stream* i_pOutput,
+                          bool    i_AppendNewLine)
 {
   return Print (i_pOutput, 0, m_DataLength, i_AppendNewLine);
 }
 
 //--------------------------------------------------------------------
-bool ByteBuffer::Print (Stream*   i_pOutput,
-                        uint16_t  i_StartAddress,
-                        uint16_t  i_ByteCount,
-                        bool      i_AppendNewLine)
+bool BytesBuffer::Print ( Stream*   i_pOutput,
+                          uint16_t  i_StartAddress,
+                          uint16_t  i_ByteCount,
+                          bool      i_AppendNewLine)
 {
   if (i_pOutput == nullptr)
     return false;

@@ -1,16 +1,16 @@
 #include <AUnit.h>
 
-#include <ByteBuffer.h>
+#include <BytesBuffer.h>
 
 //--------------------------------------------------------------------
 // - WriteBytesAndMovePtr (array)
-test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromArray_Test1)
+test (BytesBuffer_LinearBuffer_WriteBytesAndMovePtr_FromArray_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, false, pLinearBuffer);
+  BytesBuffer* pLinearBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, false, pLinearBuffer);
   assertTrue (result);
   uint8_t cache[10];
 
@@ -45,13 +45,13 @@ test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromArray_Test1)
 //--------------------------------------------------------------------
 // - WriteBytesAndMovePtr (array)
 // - get_pData ()
-test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromArray_Test2)
+test (BytesBuffer_LinearBuffer_WriteBytesAndMovePtr_FromArray_Test2)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, false, pLinearBuffer);
+  BytesBuffer* pLinearBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, false, pLinearBuffer);
   assertTrue (result);
 
   uint8_t cacheSize = 10;
@@ -115,28 +115,28 @@ test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromArray_Test2)
 }
 
 //--------------------------------------------------------------------
-// - WriteBytesAndMovePtr (ByteBuffer)
-test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromLinearBuffer_Test1)
+// - WriteBytesAndMovePtr (BytesBuffer)
+test (BytesBuffer_LinearBuffer_WriteBytesAndMovePtr_FromLinearBuffer_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, false, pLinearBuffer);
+  BytesBuffer* pLinearBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, false, pLinearBuffer);
   assertTrue (result);
 
   uint16_t srcLength = 8;
-  ByteBuffer* pSrcBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (srcLength, defaultValue, false, pSrcBuffer));  // source is linear buffer
+  BytesBuffer* pSrcBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (srcLength, defaultValue, false, pSrcBuffer));  // source is linear buffer
   for (uint16_t index = 0; index < srcLength; index++)
     pSrcBuffer->get_pData ()[index] = (uint8_t)((index + 1) * 11);  // -> 11 22 33 44 55 66 77 88  =  0x 0B 16 21 2C 37 42 4D 58
 
   //---------- Act & Assert ----------
-  assertFalse (pLinearBuffer->WriteBytesAndMovePtr (0,  (ByteBuffer*)nullptr, false));
+  assertFalse (pLinearBuffer->WriteBytesAndMovePtr (0,  (BytesBuffer*)nullptr, false));
   assertEqual (pLinearBuffer->get_CurrentWriteAddress (), (uint16_t)0);
-  assertFalse (pLinearBuffer->WriteBytesAndMovePtr (1,  (ByteBuffer*)nullptr, false));
+  assertFalse (pLinearBuffer->WriteBytesAndMovePtr (1,  (BytesBuffer*)nullptr, false));
   assertEqual (pLinearBuffer->get_CurrentWriteAddress (), (uint16_t)0);
-  assertFalse (pLinearBuffer->WriteBytesAndMovePtr (10, (ByteBuffer*)nullptr, false));
+  assertFalse (pLinearBuffer->WriteBytesAndMovePtr (10, (BytesBuffer*)nullptr, false));
   assertEqual (pLinearBuffer->get_CurrentWriteAddress (), (uint16_t)0);
   for (uint16_t index = 0; index < length; index++) assertEqual (pLinearBuffer->get_pData()[index], defaultValue);
 
@@ -204,19 +204,19 @@ test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromLinearBuffer_Test1)
 }
 
 //--------------------------------------------------------------------
-// - WriteBytesAndMovePtr (ByteBuffer)
-test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromLinearBuffer_Test2)
+// - WriteBytesAndMovePtr (BytesBuffer)
+test (BytesBuffer_LinearBuffer_WriteBytesAndMovePtr_FromLinearBuffer_Test2)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, false, pLinearBuffer);
+  BytesBuffer* pLinearBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, false, pLinearBuffer);
   assertTrue (result);
 
   uint16_t srcLength = 10;
-  ByteBuffer* pSrcBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (srcLength, defaultValue, false, pSrcBuffer));  // source is linear buffer
+  BytesBuffer* pSrcBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (srcLength, defaultValue, false, pSrcBuffer));  // source is linear buffer
   for (uint16_t index = 0; index < srcLength; index++)
     pSrcBuffer->get_pData ()[index] = (uint8_t)((index + 1) * 11);  // -> 11 22 33 44 55 66 77 88 99 110 =  0x 0B 16 21 2C 37 42 4D 58 63 6E
 
@@ -278,19 +278,19 @@ test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromLinearBuffer_Test2)
 }
 
 //--------------------------------------------------------------------
-// - WriteBytesAndMovePtr (ByteBuffer)
-test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromRingBuffer_Test1)
+// - WriteBytesAndMovePtr (BytesBuffer)
+test (BytesBuffer_LinearBuffer_WriteBytesAndMovePtr_FromRingBuffer_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, false, pLinearBuffer);
+  BytesBuffer* pLinearBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, false, pLinearBuffer);
   assertTrue (result);
 
   uint16_t srcLength = 8;
-  ByteBuffer* pSrcBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (srcLength, defaultValue, true, pSrcBuffer));  // source is ring buffer
+  BytesBuffer* pSrcBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (srcLength, defaultValue, true, pSrcBuffer));  // source is ring buffer
   for (uint16_t index = 0; index < srcLength; index++)
     pSrcBuffer->get_pData ()[index] = (uint8_t)((index + 1) * 11);  // -> 11 22 33 44 55 66 77 88  =  0x 0B 16 21 2C 37 42 4D 58
 
@@ -347,13 +347,13 @@ test (ByteBuffer_LinearBuffer_WriteBytesAndMovePtr_FromRingBuffer_Test1)
 //--------------------------------------------------------------------
 // - WriteValueAndMovePtr ()
 // - get_pData ()
-test (ByteBuffer_LinearBuffer_WriteValueAndMovePtr_Test1)
+test (BytesBuffer_LinearBuffer_WriteValueAndMovePtr_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, false, pLinearBuffer);
+  BytesBuffer* pLinearBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, false, pLinearBuffer);
   assertTrue (result);
 
   //---------- Act & Assert ----------
@@ -623,13 +623,13 @@ test (ByteBuffer_LinearBuffer_WriteValueAndMovePtr_Test1)
 //--------------------------------------------------------------------
 // Test of the functions
 // - WriteRange_From ()
-test (ByteBuffer_LinearBuffer_WriteRange_From_Test1)
+test (BytesBuffer_LinearBuffer_WriteRange_From_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (length, defaultValue, false, pLinearBuffer));
+  BytesBuffer* pLinearBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (length, defaultValue, false, pLinearBuffer));
 
   //---------- Act & Assert ----------
   assertTrue  (pLinearBuffer->WriteRange_From ( 0,  0, 0x00));
@@ -656,7 +656,7 @@ test (ByteBuffer_LinearBuffer_WriteRange_From_Test1)
 // Test of the functions
 // - WriteRange_From ()
 // - Clear ()
-test (ByteBuffer_LinearBuffer_WriteRange_From_Test2)
+test (BytesBuffer_LinearBuffer_WriteRange_From_Test2)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
@@ -665,8 +665,8 @@ test (ByteBuffer_LinearBuffer_WriteRange_From_Test2)
   uint8_t newValue3 = 0x56;
   uint16_t length = 9;
   uint8_t valueUI8 = 0;
-  ByteBuffer* pLinearBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (length, defaultValue, false, pLinearBuffer));
+  BytesBuffer* pLinearBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (length, defaultValue, false, pLinearBuffer));
 
   uint8_t expected_UI8[9] = { newValue1, defaultValue, defaultValue, newValue2, newValue2, newValue2, newValue2, defaultValue, defaultValue };
 
@@ -732,13 +732,13 @@ test (ByteBuffer_LinearBuffer_WriteRange_From_Test2)
 //--------------------------------------------------------------------
 // Test of the functions
 // - WriteRange_To ()
-test (ByteBuffer_LinearBuffer_WriteRange_To_Test1)
+test (BytesBuffer_LinearBuffer_WriteRange_To_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (length, defaultValue, false, pLinearBuffer));
+  BytesBuffer* pLinearBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (length, defaultValue, false, pLinearBuffer));
 
   //---------- Act & Assert ----------
   assertTrue  (pLinearBuffer->WriteRange_To ( 0,  0, 0x00));
@@ -765,7 +765,7 @@ test (ByteBuffer_LinearBuffer_WriteRange_To_Test1)
 // Test of the functions
 // - WriteRange_To ()
 // - Clear ()
-test (ByteBuffer_LinearBuffer_WriteRange_To_Test2)
+test (BytesBuffer_LinearBuffer_WriteRange_To_Test2)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
@@ -774,8 +774,8 @@ test (ByteBuffer_LinearBuffer_WriteRange_To_Test2)
   uint8_t newValue3 = 0x56;
   uint16_t length = 9;
   uint8_t valueUI8 = 0;
-  ByteBuffer* pLinearBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (length, defaultValue, false, pLinearBuffer));
+  BytesBuffer* pLinearBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (length, defaultValue, false, pLinearBuffer));
 
   uint8_t expected_UI8[9] = { defaultValue, defaultValue, newValue2, newValue2, newValue2, newValue2, defaultValue, defaultValue, defaultValue };
 
@@ -842,13 +842,13 @@ test (ByteBuffer_LinearBuffer_WriteRange_To_Test2)
 //--------------------------------------------------------------------
 // Test of the functions
 // - WriteRange_FromTo ()
-test (ByteBuffer_LinearBuffer_WriteRange_FromTo_Test1)
+test (BytesBuffer_LinearBuffer_WriteRange_FromTo_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (length, defaultValue, false, pLinearBuffer));
+  BytesBuffer* pLinearBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (length, defaultValue, false, pLinearBuffer));
 
   //---------- Act & Assert ----------
   assertTrue  (pLinearBuffer->WriteRange_FromTo ( 0,  0, 0x00));
@@ -873,7 +873,7 @@ test (ByteBuffer_LinearBuffer_WriteRange_FromTo_Test1)
 // Test of the functions
 // - WriteRange_FromTo ()
 // - Clear ()
-test (ByteBuffer_LinearBuffer_WriteRange_FromTo_Test2)
+test (BytesBuffer_LinearBuffer_WriteRange_FromTo_Test2)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
@@ -882,8 +882,8 @@ test (ByteBuffer_LinearBuffer_WriteRange_FromTo_Test2)
   uint8_t newValue3 = 0x56;
   uint16_t length = 9;
   uint8_t valueUI8 = 0;
-  ByteBuffer* pLinearBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (length, defaultValue, false, pLinearBuffer));
+  BytesBuffer* pLinearBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (length, defaultValue, false, pLinearBuffer));
 
   uint8_t expected_UI8[9] = { newValue1, defaultValue, defaultValue, newValue2, newValue2, newValue2, newValue2, defaultValue, defaultValue };
 

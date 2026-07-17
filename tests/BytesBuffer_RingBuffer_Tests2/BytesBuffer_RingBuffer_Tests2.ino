@@ -1,16 +1,16 @@
 #include <AUnit.h>
 
-#include <ByteBuffer.h>
+#include <BytesBuffer.h>
 
 //--------------------------------------------------------------------
 // - ReadBytesAndMovePtr (array)
-test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToArray_Test1)
+test (BytesBuffer_RingBuffer_ReadBytesAndMovePtr_ToArray_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pRingBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, true, pRingBuffer);
+  BytesBuffer* pRingBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, true, pRingBuffer);
   assertTrue (result);
   uint8_t cache[10];
 
@@ -36,13 +36,13 @@ test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToArray_Test1)
 //--------------------------------------------------------------------
 // - ReadBytesAndMovePtr (array)
 // - get_pData ()
-test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToArray_Test2)
+test (BytesBuffer_RingBuffer_ReadBytesAndMovePtr_ToArray_Test2)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pRingBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, true, pRingBuffer);
+  BytesBuffer* pRingBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, true, pRingBuffer);
   assertTrue (result);
 
   uint8_t cacheSize = 10;
@@ -95,28 +95,28 @@ test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToArray_Test2)
 }
 
 //--------------------------------------------------------------------
-// - ReadBytesAndMovePtr (ByteBuffer)
-test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToLinearBuffer_Test1)
+// - ReadBytesAndMovePtr (BytesBuffer)
+test (BytesBuffer_RingBuffer_ReadBytesAndMovePtr_ToLinearBuffer_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pRingBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, true, pRingBuffer);
+  BytesBuffer* pRingBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, true, pRingBuffer);
   assertTrue (result);
   for (uint16_t index = 0; index < length; index++)
     pRingBuffer->get_pData ()[index] = (uint8_t)((index + 1) * 11);  // -> 11 22 33 44 55 66 77 88 99  =  0x 0B 16 21 2C 37 42 4D 58 63
 
   uint16_t destLength = 8;
-  ByteBuffer* pDestBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (destLength, defaultValue, false, pDestBuffer));  // destination is linear buffer
+  BytesBuffer* pDestBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (destLength, defaultValue, false, pDestBuffer));  // destination is linear buffer
 
   //---------- Act & Assert ----------
-  assertFalse (pRingBuffer->ReadBytesAndMovePtr (0,  (ByteBuffer*)nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (0,  (BytesBuffer*)nullptr, false));
   assertEqual (pRingBuffer->get_CurrentReadAddress (), (uint16_t)0);
-  assertFalse (pRingBuffer->ReadBytesAndMovePtr (1,  (ByteBuffer*)nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (1,  (BytesBuffer*)nullptr, false));
   assertEqual (pRingBuffer->get_CurrentReadAddress (), (uint16_t)0);
-  assertFalse (pRingBuffer->ReadBytesAndMovePtr (10, (ByteBuffer*)nullptr, false));
+  assertFalse (pRingBuffer->ReadBytesAndMovePtr (10, (BytesBuffer*)nullptr, false));
   assertEqual (pRingBuffer->get_CurrentReadAddress (), (uint16_t)0);
   for (uint16_t index = 0; index < length; index++) assertEqual (pRingBuffer->get_pData()[index], (uint8_t)((index + 1) * 11));
 
@@ -177,21 +177,21 @@ test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToLinearBuffer_Test1)
 }
 
 //--------------------------------------------------------------------
-// - ReadBytesAndMovePtr (ByteBuffer)
-test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToLinearBuffer_Test2)
+// - ReadBytesAndMovePtr (BytesBuffer)
+test (BytesBuffer_RingBuffer_ReadBytesAndMovePtr_ToLinearBuffer_Test2)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pRingBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, true, pRingBuffer);
+  BytesBuffer* pRingBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, true, pRingBuffer);
   assertTrue (result);
   for (uint16_t index = 0; index < length; index++)
     pRingBuffer->get_pData ()[index] = (uint8_t)((index + 1) * 11);  // -> 11 22 33 44 55 66 77 88 99  =  0x 0B 16 21 2C 37 42 4D 58 63
 
   uint16_t destLength = 10;
-  ByteBuffer* pDestBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (destLength, defaultValue, false, pDestBuffer));  // destination is linear buffer
+  BytesBuffer* pDestBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (destLength, defaultValue, false, pDestBuffer));  // destination is linear buffer
 
   //---------- Act & Assert ----------
   assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1, pDestBuffer, false));
@@ -241,21 +241,21 @@ test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToLinearBuffer_Test2)
 }
 
 //--------------------------------------------------------------------
-// - ReadBytesAndMovePtr (ByteBuffer)
-test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToRingBuffer_Test1)
+// - ReadBytesAndMovePtr (BytesBuffer)
+test (BytesBuffer_RingBuffer_ReadBytesAndMovePtr_ToRingBuffer_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pRingBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, true, pRingBuffer);
+  BytesBuffer* pRingBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, true, pRingBuffer);
   assertTrue (result);
   for (uint16_t index = 0; index < length; index++)
     pRingBuffer->get_pData ()[index] = (uint8_t)((index + 1) * 11);  // -> 11 22 33 44 55 66 77 88 99  =  0x 0B 16 21 2C 37 42 4D 58 63
 
   uint16_t destLength = 8;
-  ByteBuffer* pDestBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (destLength, defaultValue, true, pDestBuffer));  // destination is ring buffer
+  BytesBuffer* pDestBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (destLength, defaultValue, true, pDestBuffer));  // destination is ring buffer
 
   //---------- Act & Assert ----------
   assertTrue  (pRingBuffer->ReadBytesAndMovePtr (1, pDestBuffer, false));
@@ -308,13 +308,13 @@ test (ByteBuffer_RingBuffer_ReadBytesAndMovePtr_ToRingBuffer_Test1)
 //--------------------------------------------------------------------
 // - ReadValueAndMovePtr ()
 // - get_pData ()
-test (ByteBuffer_RingBuffer_ReadValueAndMovePtr_Test1)
+test (BytesBuffer_RingBuffer_ReadValueAndMovePtr_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint16_t length = 9;
-  ByteBuffer* pRingBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, true, pRingBuffer);
+  BytesBuffer* pRingBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, true, pRingBuffer);
   assertTrue (result);
 
   for (uint16_t index = 0; index < length; index++)

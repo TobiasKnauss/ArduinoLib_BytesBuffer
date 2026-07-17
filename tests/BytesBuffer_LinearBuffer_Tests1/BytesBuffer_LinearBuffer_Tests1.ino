@@ -1,18 +1,18 @@
 #include <AUnit.h>
 
-#include <ByteBuffer.h>
+#include <BytesBuffer.h>
 
 //--------------------------------------------------------------------
 // Test of the functions
 // - Create ()
-test (ByteBuffer_LinearBuffer_Create_Test1)
+test (BytesBuffer_LinearBuffer_Create_Test1)
 {
   //---------- Arrange ----------
   uint8_t value = 0;
-  ByteBuffer* pLinearBuffer = (ByteBuffer*)&value;
+  BytesBuffer* pLinearBuffer = (BytesBuffer*)&value;
 
   //---------- Act ----------
-  bool result = ByteBuffer::Create (20, 0xFF, false, pLinearBuffer);
+  bool result = BytesBuffer::Create (20, 0xFF, false, pLinearBuffer);
 
   //---------- Assert ----------
   assertFalse (result);
@@ -22,13 +22,13 @@ test (ByteBuffer_LinearBuffer_Create_Test1)
 //--------------------------------------------------------------------
 // Test of the functions
 // - Create ()
-test (ByteBuffer_LinearBuffer_Create_Test2)
+test (BytesBuffer_LinearBuffer_Create_Test2)
 {
   //---------- Arrange ----------
-  ByteBuffer* pLinearBuffer = nullptr;
+  BytesBuffer* pLinearBuffer = nullptr;
 
   //---------- Act ----------
-  bool result = ByteBuffer::Create (0, 0xFF, false, pLinearBuffer);
+  bool result = BytesBuffer::Create (0, 0xFF, false, pLinearBuffer);
 
   //---------- Assert ----------
   assertFalse (result);
@@ -42,14 +42,14 @@ test (ByteBuffer_LinearBuffer_Create_Test2)
 // Test of the functions
 // - Create ()
 // - get_Length ()
-test (ByteBuffer_LinearBuffer_Create_Test3)
+test (BytesBuffer_LinearBuffer_Create_Test3)
 {
   //---------- Arrange ----------
   uint16_t length = 20;
-  ByteBuffer* pLinearBuffer = nullptr;
+  BytesBuffer* pLinearBuffer = nullptr;
 
   //---------- Act ----------
-  bool result = ByteBuffer::Create (length, 0xFF, false, pLinearBuffer);
+  bool result = BytesBuffer::Create (length, 0xFF, false, pLinearBuffer);
 
   //---------- Assert ----------
   assertTrue (result);
@@ -67,15 +67,15 @@ test (ByteBuffer_LinearBuffer_Create_Test3)
 // - SetReadPointer ()
 // - get_CurrentReadAddress ()
 // - get_pData ()
-test (ByteBuffer_LinearBuffer_MoveSetReadPointer_Test1)
+test (BytesBuffer_LinearBuffer_MoveSetReadPointer_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint8_t newValue1 = 0x12;
   uint16_t length = 5;
   uint8_t valueUI8 = 0;
-  ByteBuffer* pLinearBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (length, defaultValue, false, pLinearBuffer));
+  BytesBuffer* pLinearBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (length, defaultValue, false, pLinearBuffer));
 
   //---------- Act & Assert ----------
   assertEqual (pLinearBuffer->get_CurrentReadAddress (), (uint16_t)0);
@@ -158,7 +158,7 @@ test (ByteBuffer_LinearBuffer_MoveSetReadPointer_Test1)
 // - SetWritePointer ()
 // - get_CurrentWriteAddress ()
 // - get_pData ()
-test (ByteBuffer_LinearBuffer_MoveSetWritePointer_Test1)
+test (BytesBuffer_LinearBuffer_MoveSetWritePointer_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
@@ -166,8 +166,8 @@ test (ByteBuffer_LinearBuffer_MoveSetWritePointer_Test1)
   uint8_t newValue2 = 0x34;
   uint8_t newValue3 = 0x56;
   uint16_t length = 9;
-  ByteBuffer* pLinearBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (length, defaultValue, false, pLinearBuffer));
+  BytesBuffer* pLinearBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (length, defaultValue, false, pLinearBuffer));
 
   //---------- Act & Assert ----------
   assertEqual (pLinearBuffer->get_CurrentWriteAddress (), (uint16_t)0);
