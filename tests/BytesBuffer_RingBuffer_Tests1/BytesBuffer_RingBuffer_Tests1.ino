@@ -1,18 +1,18 @@
 #include <AUnit.h>
 
-#include <ByteBuffer.h>
+#include <BytesBuffer.h>
 
 //--------------------------------------------------------------------
 // Test of the functions
 // - Create ()
-test (ByteBuffer_RingBuffer_Create_Test1)
+test (BytesBuffer_RingBuffer_Create_Test1)
 {
   //---------- Arrange ----------
   uint8_t value = 0;
-  ByteBuffer* pRingBuffer = (ByteBuffer*)&value;
+  BytesBuffer* pRingBuffer = (BytesBuffer*)&value;
 
   //---------- Act ----------
-  bool result = ByteBuffer::Create (20, 0xFF, true, pRingBuffer);
+  bool result = BytesBuffer::Create (20, 0xFF, true, pRingBuffer);
 
   //---------- Assert ----------
   assertFalse (result);
@@ -22,13 +22,13 @@ test (ByteBuffer_RingBuffer_Create_Test1)
 //--------------------------------------------------------------------
 // Test of the functions
 // - Create ()
-test (ByteBuffer_RingBuffer_Create_Test2)
+test (BytesBuffer_RingBuffer_Create_Test2)
 {
   //---------- Arrange ----------
-  ByteBuffer* pRingBuffer = nullptr;
+  BytesBuffer* pRingBuffer = nullptr;
 
   //---------- Act ----------
-  bool result = ByteBuffer::Create (0, 0xFF, true, pRingBuffer);
+  bool result = BytesBuffer::Create (0, 0xFF, true, pRingBuffer);
 
   //---------- Assert ----------
   assertFalse (result);
@@ -42,14 +42,14 @@ test (ByteBuffer_RingBuffer_Create_Test2)
 // Test of the functions
 // - Create ()
 // - get_Length ()
-test (ByteBuffer_RingBuffer_Create_Test3)
+test (BytesBuffer_RingBuffer_Create_Test3)
 {
   //---------- Arrange ----------
   uint16_t length = 20;
-  ByteBuffer* pRingBuffer = nullptr;
+  BytesBuffer* pRingBuffer = nullptr;
 
   //---------- Act ----------
-  bool result = ByteBuffer::Create (length, 0xFF, true, pRingBuffer);
+  bool result = BytesBuffer::Create (length, 0xFF, true, pRingBuffer);
 
   //---------- Assert ----------
   assertTrue (result);
@@ -67,15 +67,15 @@ test (ByteBuffer_RingBuffer_Create_Test3)
 // - SetReadPointer ()
 // - get_CurrentReadAddress ()
 // - get_pData ()
-test (ByteBuffer_RingBuffer_MoveSetReadPointer_Test1)
+test (BytesBuffer_RingBuffer_MoveSetReadPointer_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
   uint8_t newValue1 = 0x12;
   uint16_t length = 5;
   uint8_t valueUI8 = 0;
-  ByteBuffer* pRingBuffer = nullptr;
-  bool result = ByteBuffer::Create (length, defaultValue, true, pRingBuffer);
+  BytesBuffer* pRingBuffer = nullptr;
+  bool result = BytesBuffer::Create (length, defaultValue, true, pRingBuffer);
   assertTrue (result);
 
   //---------- Act & Assert ----------
@@ -145,7 +145,7 @@ test (ByteBuffer_RingBuffer_MoveSetReadPointer_Test1)
 // - SetWritePointer ()
 // - get_CurrentWriteAddress ()
 // - get_pData ()
-test (ByteBuffer_RingBuffer_MoveSetWritePointer_Test1)
+test (BytesBuffer_RingBuffer_MoveSetWritePointer_Test1)
 {
   //---------- Arrange ----------
   uint8_t defaultValue = 0xAB;
@@ -153,8 +153,8 @@ test (ByteBuffer_RingBuffer_MoveSetWritePointer_Test1)
   uint8_t newValue2 = 0x34;
   uint8_t newValue3 = 0x56;
   uint16_t length = 9;
-  ByteBuffer* pRingBuffer = nullptr;
-  assertTrue (ByteBuffer::Create (length, defaultValue, true, pRingBuffer));
+  BytesBuffer* pRingBuffer = nullptr;
+  assertTrue (BytesBuffer::Create (length, defaultValue, true, pRingBuffer));
 
   assertEqual (pRingBuffer->get_CurrentWriteAddress (), (uint16_t)0);
   for (uint16_t index = 0; index < length; index++)

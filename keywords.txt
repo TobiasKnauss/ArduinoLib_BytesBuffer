@@ -1,12 +1,12 @@
 #######################################
-# Syntax Coloring Map For ByteBuffer
+# Syntax Coloring Map For BytesBuffer
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
-ByteBuffer	KEYWORD1
+BytesBuffer	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

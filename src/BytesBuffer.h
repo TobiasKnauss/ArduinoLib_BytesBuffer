@@ -1,9 +1,9 @@
-#ifndef ByteBuffer_h
-#define ByteBuffer_h
+#ifndef BytesBuffer_h
+#define BytesBuffer_h
 
 #include <Arduino.h>
 
-class ByteBuffer
+class BytesBuffer
 {
 //==================== Fields ====================
 private:
@@ -28,19 +28,19 @@ public:
   static bool Create (uint16_t      i_RingBufferLength,
                       uint8_t       i_DefaultValue,
                       bool          i_IsRingBuffer,
-                      ByteBuffer*&  o_pRingBuffer);
+                      BytesBuffer*& o_pRingBuffer);
 
   //-------------------- instance --------------------
 
-  ~ByteBuffer ();
+  ~BytesBuffer ();
 
 private:
   //-------------------- instance --------------------
 
-  ByteBuffer (uint8_t*  i_pData,
-              uint16_t  i_DataLength,
-              uint8_t   i_DefaultValue,
-              bool      i_IsRingBuffer);
+  BytesBuffer ( uint8_t*  i_pData,
+                uint16_t  i_DataLength,
+                uint8_t   i_DefaultValue,
+                bool      i_IsRingBuffer);
 
 //==================== Properties ====================
 public:
@@ -122,9 +122,9 @@ public:
 
   // Read the specified number of bytes from the ring buffer to the given destination buffer and move the pointer forward.
   // If the end of the ring buffer is reached, wrap the pointer around to the buffer start.
-  bool ReadBytesAndMovePtr (uint16_t    i_ByteCount,
-                            ByteBuffer* i_pDestination,
-                            bool        i_InvertByteOrder);
+  bool ReadBytesAndMovePtr (uint16_t      i_ByteCount,
+                            BytesBuffer*  i_pDestination,
+                            bool          i_InvertByteOrder);
 
   //--------------------------------------------------------------------
   // ReadValueAndMovePtr
@@ -179,9 +179,9 @@ public:
 
   // Write the specified number of bytes from the given source buffer to the ring buffer and move the pointer forward.
   // If the end of the ring buffer is reached, wrap the pointer around to the buffer start.
-  bool WriteBytesAndMovePtr ( uint16_t    i_ByteCount,
-                              ByteBuffer* i_pSource,
-                              bool        i_InvertByteOrder);
+  bool WriteBytesAndMovePtr ( uint16_t      i_ByteCount,
+                              BytesBuffer*  i_pSource,
+                              bool          i_InvertByteOrder);
 
   //--------------------------------------------------------------------
   // WriteValueAndMovePtr
